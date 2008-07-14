@@ -1,0 +1,225 @@
+#!/usr/bin/perl -w
+# vim:sw=4:et:
+
+use strict;
+
+# Re-adopted 2007 by Dirk Mueller, used code from
+# 2004 by Mads Martin Joergensen inspired by the original by
+# Andi Kleen, SuSE Labs who
+# based it on a python script by David Mosberger which was
+# Copyright (c) 2004 Hewlett-Packard Development Company, L.P.
+#	David Mosberger <davidm@hpl.hp.com>
+
+# HOWTO:
+#   a) add a new regexp to %warn_checks. Key is regexp, Value is identifier
+#   b) optional: add an informative message to %warn_desc, Key is identifier, Value is message
+#   c) add severity to %warn_severity: Key is identifier, Value is 'E' (error) 'W' (warning) or 'D' (debug)
+
+my %warn_checks = (
+    'warning:.*makes pointer from integer without a cast' => "64bit-portability-issue",
+    'warning:.*operation on .* may be undefined' => "sequence-point",
+    'warning:.*mathematical meaning' => "mathmeaning",
+    'warning:.*ignoring return value of (?:.*alloc.*|set.*uid), declared with' => "unchecked-return-value",
+    'warning:.*type-punned.*strict-aliasing' => "strict-aliasing-punning",
+    'warning:.*control reaches end of non-void function' => "no-return-in-nonvoid-function",
+    'warning:.*format not a string literal and no format arguments' => "format-security",
+    'warning:.*missing sentinel in function call' => "missing-sentinel",
+    'warning:.*call to .* will always overflow destination buffer' => "bufferoverflow",
+    'warning:.*call to .*strncat.* might overflow destination buffer' => "bufferoverflowstrncat",
+    'warning:.*is used uninitialized in this function' => "uninitialized-variable",
+    'warning:.*too few arguments for format' => "missing-arg-for-fmt-string",
+    "warning:.*implicit .*\b(recv|recvfrom|read|pread|pread64|readlink|getwd|getcwd|fgets|fgets_unlock|strncat|strcat|memmove|memcpy|mempcpy|strpcpy|strcpy|strncpy|printf|sprintf|snprintf|vprintf|vsprintf|vsnprintf|fprintf|vfprintf|gets|memset|bzero|bcopy|strlen|strcmp|wcscpy|wcpcpy|wcsncpy|wcpncpy|wcscat|swprintf|vswprintf|fgetws|wcsrtombs|mbsrtowcs|wcrtomb|wcsnrtombs|ptsname|realpath|wctomb|mbstowcs|ttyname_r|getlogin_r|getgroups|confstr|gethostname|getdomainname|)\b" => "implicit-fortify-decl",
+    'warning:.*memset used with constant zero length parameter' => "memset-with-zero-length",
+    'warning:.*comparison with string literal' => "stringcompare",
+    'warning: the address of .* will always evaluate as' => "uses-function-address"
+);
+
+my %warn_desc = (
+    "strict-aliasing-punning" =>  "Program is likely to break with new gcc. Try -fno-strict-aliasing.\n",
+    "sequence-point" => "Program causes undefined operation\n(likely same variable used twice" .
+            "and post/pre incremented in the same expression).\n" .
+            "e.g. x = x++; Split it in two operations.",
+    "mathmeaning" => "Program uses operation a <= b <= c, which is not well defined.\n",
+    "no-return-in-nonvoid-function" => "Program returns random data in a function",
+    "missing-sentinel" => "Function call needs to pass NULL-pointer as last argument",
+    "bufferoverflow" => "Statement is overflowing a buffer",
+    "bufferoverflowstrncat" => "Statement might be overflowing a buffer in strncat. Common mistake:\n" .
+            "BAD: strncat(buffer,charptr,sizeof(buffer)) is wrong, it takes the left over size as 3rd argument\n" .
+            "GOOD: strncat(buffer,charptr,sizeof(buffer)-strlen(buffer)-1)\n",
+    "missing-arg-for-fmt-string" => "Function call is passing too few arguments to a *printf function.\n",
+    "uninitialized-variable" => "Program is using uninitialized variables.\nNote the difference between \"is used\" and \"may be used\"",
+    "format-security" => "Function call uses possibly exploitable format strings\n",
+    "stringcompare" => "Expression compares a char* pointer with a string literal.\n" .
+        "Usually a strcmp() was intended by the programmer\n",
+    "unchecked-return-value" => "Program ignores return value at critical places",
+    "memset-with-zero-length" => "There are likely swapped arguments in a memset\n" .
+        "Check that the function arguments match: memset(ptr,BYTEVALUE,LENGTH)\n",
+
+    "implicit-fortify-decl" =>  "Program is using implicit definitions of special functions.\n" .
+                   "these functions need to use their correct prototypes to allow\n" .
+                   "the lightweight buffer overflow checking to work.\n" .
+                   "  - Implicit memory/string functions need #include <string.h>.\n".
+                   "  - Implicit *printf functions need #include <stdio.h>.\n" .
+                   "  - Implicit *printf functions need #include <stdio.h>.\n" .
+                   "  - Implicit *read* functions need #include <unistd.h>.\n" .
+                   "  - Implicit *recv* functions need #include <sys/socket.h>.\n",
+     "no-rpm-opt-flags" => "File is compiled without RPM_OPT_FLAGS",
+     "uses-function-address" => "File uses address of function, '()' missing?"
+);
+
+my %warn_severity = (
+    "64bit-portability-issue" => 'E',
+    "strict-aliasing-punning" => 'W',
+    "no-return-in-nonvoid-function" => 'E',
+    "missing-sentinel" => 'E',
+    "bufferoverflow" => 'E',
+    "memset-with-zero-length" => 'W',
+    "missing-arg-for-fmt-string" => 'W',
+    "implicit-fortify-decl" => 'W',
+    "format-security" => 'W',
+    "unchecked-return-value" => 'E',
+    "mathmeaning" => 'E',
+    "no-rpm-opt-flags" => 'W',
+    "sequence-point" => 'E',
+    "bufferoverflowstrncat" => 'E',
+    "stringcompare" => 'E',
+    "uninitialized-variable" => 'W',
+    "uses-function-address" => 'D'
+);
+
+#----------------------------------------------------------------------
+
+my %warnings = ();
+
+my $inline_location = "";
+
+sub add_warning($$)
+{
+    my ($warntype, $warnline) = @_;
+
+    my ($filename, $linenum) = (split /:/, $warnline)[0,1];
+
+    ($filename, $linenum) = ($1, $2)
+        if ($warnline =~ m/\/usr\/include\/bits/ &&
+            $inline_location =~ m/ at (\S+):(\d+)/);
+
+    defined($filename) or die;
+    defined($warnline) or die;
+    defined($warntype) or die;
+    my $len = defined($warnings{$warntype}{$filename})
+        ? length($warnings{$warntype}{$filename}) : 0;
+
+    if($len > 0) {
+        $warnings{$warntype}{$filename} .= ", $linenum" 
+        if ($warnings{$warntype}{$filename} !~ /\Q$linenum\E/);
+    } else {
+        $warnings{$warntype}{$filename} = $linenum;
+    }
+}
+
+my $warn_package = $ENV{'PNAME'} || "build";
+
+sub print_warning($)
+{
+    my ($warntype) = @_;
+    return if (!defined($warnings{$warntype}));
+    if (defined($warn_desc{$warntype})) {
+        my $prefix = "\nI:";
+        foreach my $l (split /^/, $warn_desc{$warntype}) {
+            chomp $l;
+            print STDERR "$prefix $l\n";
+            $prefix = "  ";
+        }
+    }
+
+    foreach my $filename (sort keys %{$warnings{$warntype}}) {
+        print STDERR "$warn_severity{$warntype}: $warn_package $warntype $filename: $warnings{$warntype}{$filename}\n";
+    }
+}
+
+my $warn_monster;
+
+sub analyze_for_warning($)
+{
+    my ($line) = @_;
+    # inlined from 'void log_status_write(UPSINFO*, char*, ...)' at reports.c:110
+    $inline_location = $line if ($line =~ /^\s+inlined from .* at/);
+    if ($line =~ /$warn_monster/o) {
+        # somehow I cannot precompile the regex directly, though it would
+        # help here
+        foreach my $w (keys %warn_checks) {
+            if ($line =~ $w) {
+                &add_warning($warn_checks{$w}, $_);
+                last;
+            }
+        }
+    }
+}
+
+sub sanity_check()
+{
+    foreach my $w(values %warn_checks) {
+        die "undefined severity for $w"
+            if (!defined($warn_severity{$w}));
+        die "warntype contains a space: $w"
+            if ($w =~ /\s+/);
+        die "warntype is not descriptive: $w"
+            if (length($w) < 8);
+    }
+    $warn_monster = "(?:" . join('|', keys %warn_checks) . ")";
+}
+
+&sanity_check();
+
+my $in_build_stage = 0;
+
+while (<>) {
+    chomp;
+    next if (m,/usr/include/c\+\+/,);
+
+    $in_build_stage = 1 if (/^Executing\(\%build/);
+    next if $in_build_stage == 0;
+    last if (/^Executing\(\%install/);
+
+    # We should only abort for implicits when using fortify...
+    if (/(gcc|cc|g\+\+|c\+\+) .*-D_FORTIFY_SOURCE/ ||
+        /(gcc|cc|g\+\+|c\+\+) .*-ffortify/ ) {
+        if (! /-U_FORTIFY_SOURCE/ &&
+            ! /-fno-fortify/ &&
+            ! /-ffortify=0/ ) {
+            $warn_severity{"implicit-fortify-decl"} = 'E';
+        }
+    }
+
+    # Detect if we are compiling and if the program uses RPM_OPT_FLAGS.
+    my $iscompilerline = 0;
+    if (/^(|.*[\s;\/]+)(gcc|cc|g\+\+) .*/i) {
+        # avoid make dep lines...
+        $iscompilerline = 1 if (! /(-E|-MD|-shared|gccmakedep)/);
+        $iscompilerline = 1 if (/-MD/ && /\.o /); # -MD and object output
+    }
+    # libtool needs some special love.
+    $iscompilerline = 1 if (/libtool.*--mode=compile.*(gcc|cc|g\+\+)/i);
+    # If a line has -fmessage-length in it assume it uses RPM_OPT_FLAGS.
+    # If you avoid this check by adding -fml, we will hack your hands off.
+    if ($iscompilerline && ! /-fmessage-length/ && /\.c/i) {
+        # split away "foo.c" or foo.c; or similar too.
+        foreach my $f(grep(/\.c(pp|c)?$/,split(/[ "';`]/))) {
+            &add_warning("no-rpm-opt-flags", "<cmdline>:$f");
+        }
+    }
+
+    &analyze_for_warning($_);
+}
+
+my $had_error = 0;
+
+foreach my $s ('D', 'W', 'E') {
+    foreach my $w (sort (values %warn_checks, "no-rpm-opt-flags")) {
+        next if $warn_severity{$w} ne $s;
+        &print_warning($w);
+        $had_error = 1
+            if (defined($warnings{$w}) && $warn_severity{$w} eq 'E');
+    }
+}
+exit $had_error;

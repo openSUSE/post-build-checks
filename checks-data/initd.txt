@@ -1,0 +1,620 @@
+2xthinclientserver        2X Software                             geoffrey@2x.com
+3dwm-server               Reserved for LSB-Compliant Distribution lsb@lanana.org
+acct                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+acpid                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+acquire                   Acquired Intelligence Inc.              mike@aiinc.ca
+adjtimex                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+afs                       DeanSoft Co.,Ltd.                       michael@deansoft.com.tw
+aime                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+alamin-server             Reserved for LSB-Compliant Distribution lsb@lanana.org
+alkahest                  Alkahest by the Alkahest Initiative     eric_windham@ncsu.edu
+allianz                   Allianz Insurance                       rainer.brunold@allianz.at
+alsa                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+amavis                    AMaViS Development Team                 amavis@amavis.org
+amavisd                   AMaViS Development Team                 amavis@amavis.org
+amavis-postfix            Reserved for LSB-Compliant Distribution lsb@lanana.org
+am-utils                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+anacron                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+and                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+apache                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+apache-perl               Reserved for LSB-Compliant Distribution lsb@lanana.org
+apache-ssl                Reserved for LSB-Compliant Distribution lsb@lanana.org
+apcd                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+apcupsd                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+apmd                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+aprsd                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+argus                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+arkeia                    Arkeia Corporation                      aspicht@arkeia.com
+arla                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+armtech                   Aurema Pty Ltd                          vickyo@aurema.com
+arpd                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+arpwatch                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+aspera                    Aspera, Inc.                            serban@asperasoft.com
+atd                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+atftpd                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+atm                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+atokx                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+aumix                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+aumix-gtk                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+autofs                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+backupexpress             Backup Express by Syncsort, Inc.        klieberman@syncsort.com
+bayonne                   Open Source Telecom Corp                dyfet@ostel.com
+bind                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+bind9                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+binfmt-support            Reserved for LSB-Compliant Distribution lsb@lanana.org
+binkd                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+bird                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+bl                        Reserved for LSB-Compliant Distribution lsb@lanana.org
+blinkd                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+blootbot                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+bluetooth                 Bluetooth subsystem                     marcel@holtmann.org
+bnetd                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+boa                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+bootmisc.sh               Reserved for LSB-Compliant Distribution lsb@lanana.org
+bootparamd                Reserved for LSB-Compliant Distribution lsb@lanana.org
+bpalogin                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+bpowerd                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+brltty                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+bwbar                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+bzflagserver              SUSE LINUX GmBH a Novell Business       mmj@suse.de
+caantivirus               Computer Associates                     lanana.registrations@ca.com
+camserv                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+camserv-relay             Reserved for LSB-Compliant Distribution lsb@lanana.org
+canna                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+capisuite                 CapiSuite - SuSE Linux AG               ghillie@suse.de
+caudium                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+centrifydc                Centrify Direct Control Suite           adam.au@centrify.com
+cern-httpd                Reserved for LSB-Compliant Distribution lsb@lanana.org
+cfsd                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+chainmail                 Caversham Computer Services Ltd.        wrd@cavcomp.co.uk
+checkfs.sh                Reserved for LSB-Compliant Distribution lsb@lanana.org
+checkroot.sh              Reserved for LSB-Compliant Distribution lsb@lanana.org
+chrony                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+cipe                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+ciphire                   Ciphire Labs                            le at ciphirelabs.com
+ciphire-gw                Ciphire Labs                            le at ciphirelabs.com
+ciphire-proxy             Ciphire Labs                            le at ciphirelabs.com
+cjdbc                     ObjectWeb Consortium                    lsb@objectweb.org
+cnewsclean                Reserved for LSB-Compliant Distribution lsb@lanana.org
+connectgate               Lymeware Corporation                    cfox@lymeware.com
+conserver-server          Reserved for LSB-Compliant Distribution lsb@lanana.org
+console-cyrillic          Reserved for LSB-Compliant Distribution lsb@lanana.org
+console-log               Reserved for LSB-Compliant Distribution lsb@lanana.org
+console-screen.kbd.sh     Reserved for LSB-Compliant Distribution lsb@lanana.org
+console-screen.sh         Reserved for LSB-Compliant Distribution lsb@lanana.org
+conwrks                   ConsoleWorks by TECSys Development, Inc support@tditx.com
+courier-authdaemon        Reserved for LSB-Compliant Distribution lsb@lanana.org
+courier-imap              Reserved for LSB-Compliant Distribution lsb@lanana.org
+courier-imap-ssl          Reserved for LSB-Compliant Distribution lsb@lanana.org
+courier-mta               Reserved for LSB-Compliant Distribution lsb@lanana.org
+courier-mta-ssl           Reserved for LSB-Compliant Distribution lsb@lanana.org
+courier-pcp               Reserved for LSB-Compliant Distribution lsb@lanana.org
+courier-pop               Reserved for LSB-Compliant Distribution lsb@lanana.org
+courier-pop-ssl           Reserved for LSB-Compliant Distribution lsb@lanana.org
+cpoint                    Caversham Computer Services Ltd.        wrd@cavcomp.co.uk
+craits                    Caversham Computer Services Ltd.        wrd@cavcomp.co.uk
+crms                      SVI Retail                              iblackwell@sviretail.com
+cron                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+crond                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+crossfire-server          Reserved for LSB-Compliant Distribution lsb@lanana.org
+cst                       CST GmbH                                thimo.neubauer@cst.com
+cucipop                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+cups                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+cupsys                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+cvsupd                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+daltoneyes                Objective Pathology Systems             kemp@extelligence.net
+dancer-ircd               Reserved for LSB-Compliant Distribution lsb@lanana.org
+dancer-services           Reserved for LSB-Compliant Distribution lsb@lanana.org
+danted                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+db2icd                    IBM DB2 Universal Database Information  ihakes@ca.ibm.com
+dbbalancer                Reserved for LSB-Compliant Distribution lsb@lanana.org
+ddclient                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+ddt-client                Reserved for LSB-Compliant Distribution lsb@lanana.org
+ddt-server                Reserved for LSB-Compliant Distribution lsb@lanana.org
+decnet                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+devfsd                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+devpts.sh                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+dhclient                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+dhcp                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+dhcp3-relay               Reserved for LSB-Compliant Distribution lsb@lanana.org
+dhcp3-server              Reserved for LSB-Compliant Distribution lsb@lanana.org
+dhcpcd                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+dhcp-relay                Reserved for LSB-Compliant Distribution lsb@lanana.org
+dhid                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+dhttpd                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+diablo                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+diald                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+dictd                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+discover                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+distributed-net           Reserved for LSB-Compliant Distribution bovine@distributed.net
+distributed-net-pproxy    Reserved for LSB-Compliant Distribution bovine@distributed.net
+dnet-progs                Reserved for LSB-Compliant Distribution lsb@lanana.org
+dns-clean                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+dnsmasq                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+docview                   Caldera Systems Inc. dba The SCO Group  linuxtech@sco.com
+dqs                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+drac                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+drbd                      The DRBD development team               philipp.reisner@linbit.com
+dvb                       SUSE LINUX Products GmbH                ludwig.nussel@suse.de
+ekahau-engine             Ekahau, Inc                             juha.sievanen@ekahau.com
+eloquence                 Marxmeier Software AG                   mike@marxmeier.com
+elvind                    Mantara Software                        lsb@mantara.com
+emwin                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+epos                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+esound                    Enlightenment and Gnome sound daemon    sbrabec@suse.cz
+evms                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+exim                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+ez-ipupdate               Reserved for LSB-Compliant Distribution lsb@lanana.org
+faximum                   Faximum Software Inc.                   George.Pajari@faximum.com
+fcron                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+festival                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+fetchmail                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+fidogate                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+filterproxy               Reserved for LSB-Compliant Distribution lsb@lanana.org
+firestarter               Reserved for LSB-Compliant Distribution lsb@lanana.org
+firewall-easy             Reserved for LSB-Compliant Distribution lsb@lanana.org
+fma                       Fabric Management Agent                 help@myri.com
+frad                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+freenet                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+freenet6                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+freenet-unstable          Reserved for LSB-Compliant Distribution lsb@lanana.org
+freeradius                Reserved for LSB-Compliant Distribution lsb@lanana.org
+freewnn-cserver           Reserved for LSB-Compliant Distribution lsb@lanana.org
+freewnn-jserver           Reserved for LSB-Compliant Distribution lsb@lanana.org
+freewnn-kserver           Reserved for LSB-Compliant Distribution lsb@lanana.org
+freewnn-tserver           Reserved for LSB-Compliant Distribution lsb@lanana.org
+frox                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+fsg                       The Free Standards Group                dbb@freestandards.org
+ftp-proxy                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+fwctl                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+fwlogwatch                Reserved for LSB-Compliant Distribution lsb@lanana.org
+galaxy                    CommVault Galaxy                        dmitriy@commvault.com
+garpd                     Microcraft AB Garp                      marko.kupiainen@garp.se
+gcpegg                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+gdm                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+gdomap                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+geas                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+geneweb                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+genpower                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+gidentd                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+getport                   University of Utah Office of IT         support@it.utah.edu
+gm                        Glenn's Messages                        help@myri.com
+gnudip                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+gom                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+gopherd                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+gpm                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+guarddog                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+gwava                     Beginfinite, Inc                        mjb@gwava.com
+gwavaman                  Beginfinite, Inc                        mjb@gwava.com
+gwava-poa                 Beginfinite, Inc                        mjb@gwava.com
+haldaemon                 Danny Kukawka                           dkukawka@suse.de
+halt                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+heartbeat                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+heimdal-kdc               Reserved for LSB-Compliant Distribution lsb@lanana.org
+hostname.dhcp             Reserved for LSB-Compliant Distribution lsb@lanana.org
+hostname.sh               Reserved for LSB-Compliant Distribution lsb@lanana.org
+hotplug                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+hplip                     HP Linux Imaging and Printing project   david.suffield@hp.com
+hpoj                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+hpsockd                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+httpd                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+hwclockfirst.sh           Reserved for LSB-Compliant Distribution lsb@lanana.org
+hwclock.sh                Reserved for LSB-Compliant Distribution lsb@lanana.org
+hwtools                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+hylafax                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+iagent                    Lymeware Corporation                    cfox@lymeware.com
+iagent3                   Lymeware Corporation                    cfox@lymeware.com
+icecast-server            Reserved for LSB-Compliant Distribution lsb@lanana.org
+identd                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+ifupdown                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+inet                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+inetd                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+initrd-tools.sh           Reserved for LSB-Compliant Distribution lsb@lanana.org
+inn                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+inn2                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+intel-rng-tools           Reserved for LSB-Compliant Distribution lsb@lanana.org
+interchange               Reserved for LSB-Compliant Distribution lsb@lanana.org
+ipac                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+ipac-ng                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+ipfm                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+ipip                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+ipmasq                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+ipmasq-kmod               Reserved for LSB-Compliant Distribution lsb@lanana.org
+ipmi                      OpenIPMI Project                        matt_domsch@dell.com
+ippl                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+ipsec                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+iptables                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+ipvsadm                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+ipx                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+ipxripd                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+ircd                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+irda                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+irq_balancer              SUSE LINUX Products GmbH                sf@suse.de
+isapnp                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+isdn                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+isdnactivecards           Reserved for LSB-Compliant Distribution lsb@lanana.org
+isdneurofile              Reserved for LSB-Compliant Distribution lsb@lanana.org
+isdnutils                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+ivman                     Rohan McGovern                          rohan@mcgovern.id.au
+ixbiff                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+jabber                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+jail                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+jboss                     JBoss Application, SUSE CR s.r.o.       pmladek@suse.cz
+jftpgw                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+jmon                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+jonas                     JOnAS, ObjectWeb Consortium             lsb@objectweb.org
+jove                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+joystick                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+jserv                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+jslaunch                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+junkbuster                Reserved for LSB-Compliant Distribution lsb@lanana.org
+kannel                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+kdm                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+keep                      Concentrico, Inc                        skirkby@concentrico.net
+keepd                     Concentrico, Inc                        skirkby@concentrico.net
+kerberos4kth-kdc          Reserved for LSB-Compliant Distribution lsb@lanana.org
+keymap.sh                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+kimberlite                Reserved for LSB-Compliant Distribution lsb@lanana.org
+klisa                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+klogd                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+krb5-admin-server         Reserved for LSB-Compliant Distribution lsb@lanana.org
+krb5-kdc                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+kudzu                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+l2tpd                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+lambdamoo                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+laptop-net                Reserved for LSB-Compliant Distribution lsb@lanana.org
+latd                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+lcd4linux                 lcd4linux package                       tsieden@suse.de
+LCDd                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+ldirectord                Reserved for LSB-Compliant Distribution lsb@lanana.org
+leeuwenhoek               Objective Pathology Systems             kemp@extelligence.net
+ledd                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+chipcardd3                Martin Preuss                           martin@libchipcard.de
+linesrv                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+linuxconf                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+linuxlogo                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+lirc                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+lmsd                      LAN Management System Daemon - Lucas J. baseciq@baseciq.org
+log2mail                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+lokkit                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+lpd                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+lpd-ppd                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+lprng                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+lsf                       Platform Computing                      billm@platform.com
+lsh-server                Reserved for LSB-Compliant Distribution lsb@lanana.org
+lvm                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+lwresd                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+lyskom-server             Reserved for LSB-Compliant Distribution lsb@lanana.org
+mailscanner               Reserved for LSB-Compliant Distribution lsb@lanana.org
+makedev                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+mandate                   ADS Specialists, Inc.                   gedwards@ads-specialists.com
+mandateip                 ADS Specialists, Inc.                   gedwards@ads-specialists.com
+maradns                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+mas                       mas by Shiman Associates Inc            leon@magic.shiman.com
+mason                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+masqmail                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+maxdb                     MaxDB by MySQL AB                       zak@mysql.com
+mcserv                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+mdadm                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+mdadm-raid                Reserved for LSB-Compliant Distribution lsb@lanana.org
+mdctl                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+mdctl-raid                Reserved for LSB-Compliant Distribution lsb@lanana.org
+mdidentd                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+medusa                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+mgetty-fax                Reserved for LSB-Compliant Distribution lsb@lanana.org
+microcode.ctl             Reserved for LSB-Compliant Distribution lsb@lanana.org
+mimersql                  Upright Database Technology AB Mimer SQ per.bengtsson@upright.se
+modutils                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+momonga                   Momonga Project                         muraken@momonga-linux.org
+mon                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+mopd                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+mosix                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+mountall.sh               Reserved for LSB-Compliant Distribution lsb@lanana.org
+mountfix                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+mountnfs.sh               Reserved for LSB-Compliant Distribution lsb@lanana.org
+mpagent                   Grid MP Platform by United Devices      jlawson@ud.com
+mpservices                Grid MP Platform by United Devices      jlawson@ud.com
+mpwebsvc                  Grid MP Platform by United Devices      jlawson@ud.com
+mrouted                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+msec-daemon               GFi Software Ltd                        raphael@gfi.com
+msec-milter               GFi Software Ltd                        raphael@gfi.com
+mserv                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+mserver                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+mt-st                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+muddleftpd                Reserved for LSB-Compliant Distribution lsb@lanana.org
+murasaki                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+mwavem                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+mx                        Myrinet Express                         help@myri.com
+mysql                     MySQL by MySQL AB                       zak@mysql.com
+named                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+nas                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+nbd-client                Reserved for LSB-Compliant Distribution lsb@lanana.org
+nbd-server                Reserved for LSB-Compliant Distribution lsb@lanana.org
+net-acct                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+netatalk                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+netenv                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+nethack                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+netobjd                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+netperf                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+netplan                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+netsaint                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+netsaint-statd            Reserved for LSB-Compliant Distribution lsb@lanana.org
+netvsn                    NetVision, Inc                          jay.adams@netvision.com
+netvision                 NetVision, Inc                          jay.adams@netvision.com
+network                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+networking                Reserved for LSB-Compliant Distribution lsb@lanana.org
+newscache                 NewsCache project Herbert Straub        herbert@linuxhacker.at
+nfs                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+nfs-common                Reserved for LSB-Compliant Distribution lsb@lanana.org
+nfs-kernel-server         Reserved for LSB-Compliant Distribution lsb@lanana.org
+nfslock                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+nfs-user-server           Reserved for LSB-Compliant Distribution lsb@lanana.org
+nis                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+nmb                       Samba                                   lmuelle@suse.de
+nntpcache                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+noffle                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+noflushd                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+nscd                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+nsmon                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+ntop                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+ntp                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+ntpdate                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+nullmailer                Reserved for LSB-Compliant Distribution lsb@lanana.org
+nut                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+nviboot                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+nvi-m17n                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+nvi-m17n-canna            Reserved for LSB-Compliant Distribution lsb@lanana.org
+oftpd                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+oidentd                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+omniorb-nameserver        Reserved for LSB-Compliant Distribution lsb@lanana.org
+omreports                 University of Utah Office of IT         support@it.utah.edu
+oops                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+openafs-client            Reserved for LSB-Compliant Distribution lsb@lanana.org
+openafs-fileserver        Reserved for LSB-Compliant Distribution lsb@lanana.org
+opengate                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+openh323gk                Reserved for LSB-Compliant Distribution lsb@lanana.org
+openmanage                Dell Inc                                prakash_nara@dell.com
+openmosix                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+oss-preserve              Reserved for LSB-Compliant Distribution lsb@lanana.org
+otrs                      OTRS GmbH                               info@otrs.org
+ovpa                      HP OpenView Performance Agent           dwight.young@hp.com
+panthera                  Panthera Systems                        daniel.baumann@panthera-systems.net
+partimaged                Reserved for LSB-Compliant Distribution lsb@lanana.org
+pcmcia                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+pcscd                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+pdns                      PowerDNS                                nadvornik@suse.cz
+pdnsd                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+peerfs                    PeerFS Replicating Filesystem           morreale@radiantdata.com
+perdition                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+pipsecd                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+pkspxy                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+plex86                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+plptools                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+pmxs                      PolyServe Inc.                          lsb@polyserve.com
+popa3d                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+pop-before-smtp           Reserved for LSB-Compliant Distribution lsb@lanana.org
+portmap                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+portsentry                Reserved for LSB-Compliant Distribution lsb@lanana.org
+postfix                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+postgresql                PostgreSQL ORDBMS                       JanWieck@Yahoo.com
+powerfail                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+powersaved                powersave daemon                        trenn@suse.de
+powertweakd               Reserved for LSB-Compliant Distribution lsb@lanana.org
+powstatd                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+ppp                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+pptpd                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+prime-net                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+procps.sh                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+proftpd                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+pure-ftpd                 SUSE LINUX Products GmbH                hvogel@suse.de
+pvss                      PVSS by ETM Aktiengesellschaft          koller@etm.at
+pwcheck                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+qmail                     Qmail MTA                               bench@guamcell.net
+qpage                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+qsnet                     qsnet for Quadrics Ltd.                 daniel.blueman@quadrics.com
+queue                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+quota                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+quotarpc                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+radioclk                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+radiusd                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+radiusd-livingston        Reserved for LSB-Compliant Distribution lsb@lanana.org
+radvd                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+raid                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+raid2                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+random                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+rarpd                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+rawio                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+rbootd                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+rc                        Reserved for LSB-Compliant Distribution lsb@lanana.org
+rcS                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+README                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+reboot                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+resmgr                    SUSE LINUX Products GmbH                ludwig.nussel@suse.de
+rgpsp                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+rinetd                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+ricis                     RICIS, Inc.                             lsb@ricis.com
+rlagent                   Beginfinite, Inc.                       mjb@gwava.com
+rlcenter                  Beginfinite, Inc.                       mjb@gwava.com
+rlinetd                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+rmnologin                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+rms                       rms for Quadrics Ltd.                   daniel.blueman@quadrics.com
+routed                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+roxen                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+roxen2                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+rpasswdd                  pwdutils package                        kukuk@suse.de
+rpcbind                   kukuk's port of TI-RPC for Linux        kukuk@suse.de
+rplay                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+rproxy                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+rrlogind                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+rspfd                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+rstatd                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+rusersd                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+rwhod                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+samba                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+saslauthd                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+sauce                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+scandetd                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+scanlogd                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+scobrand                  Caldera Systems Inc. dba The SCO Group  linuxtech@sco.com
+scsitools-pre.sh          Reserved for LSB-Compliant Distribution lsb@lanana.org
+scsitools.sh              Reserved for LSB-Compliant Distribution lsb@lanana.org
+securetransport           Tumbleweed Communications Corp.         mattl@tumbleweed.com
+secvpn                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+sendmail                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+sendpage                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+sendsigs                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+sensord                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+ser2net                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+serpento                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+set6x86                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+setmixer                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+setserial                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+sfs-client                Reserved for LSB-Compliant Distribution lsb@lanana.org
+sfs-server                Reserved for LSB-Compliant Distribution lsb@lanana.org
+shaper                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+shaperd                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+shorewall                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+single                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+skeleton                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+skinsight                 Objective Pathology Systems             kemp@extelligence.net
+skkserv                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+slapd                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+slashem                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+sleepd                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+slpd                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+smad                      SyAM Software, Inc.                     michael.daniele@syamsoftware.com
+smagent                   Engenio Information Technologies, Inc   danny.pevoto@engenio.com
+smail                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+smartd                    smartmontools                           sbrabec@suse.cz
+smartsuite                Reserved for LSB-Compliant Distribution lsb@lanana.org
+smb                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+smcd                      SyAM Software, Inc.                     michael.daniele@syamsoftware.com
+smmonitor                 Engenio Information Technologies, Inc   danny.pevoto@engenio.com
+smokeping                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+smtpd                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+smtpfeed                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+smwd                      SyAM Software, Inc.                     michael.daniele@syamsoftware.com
+sn                        Reserved for LSB-Compliant Distribution lsb@lanana.org
+snmpd                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+snmptrapfmt               Reserved for LSB-Compliant Distribution lsb@lanana.org
+snort                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+spamassassin              Reserved for LSB-Compliant Distribution lsb@lanana.org
+spong-client              Reserved for LSB-Compliant Distribution lsb@lanana.org
+spong-server              Reserved for LSB-Compliant Distribution lsb@lanana.org
+squid                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+squidtaild                Reserved for LSB-Compliant Distribution lsb@lanana.org
+ssh                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+ssh2                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+sshd                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+ssh-krb5                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+ssh-nonfree               Reserved for LSB-Compliant Distribution lsb@lanana.org
+sslwrap                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+ssvl                      SCO System V Libraries for Linux        linuxtech@sco.com
+strs                      StreamServe Ltd.                        kaj.nylen@streamserve.com
+subdomain                 SubDomain by Immunix                    dominic@immunix.com
+sudo                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+sudoscript                EGBOK Consultants                       hbo@egbok.com 
+susefirewall2_final       SUSE LINUX Products GmbH                ludwig.nussel@suse.de
+susefirewall2_init        SUSE LINUX Products GmbH                ludwig.nussel@suse.de
+susefirewall2_setup       SUSE LINUX Products GmbH                ludwig.nussel@suse.de
+svgatextmode              Reserved for LSB-Compliant Distribution lsb@lanana.org
+swapd                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+sympa                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+sysklogd                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+syslog                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+syslog-ng                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+sysstat                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+systemimager              Reserved for LSB-Compliant Distribution lsb@lanana.org
+systune                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+tac-plus                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+tama                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+tcpquota                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+tcpspy                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+teamware                  Teamware Mobile, Teamware Group         ken.barnes@teamware.co.uk
+teapop                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+teapop-mysql              Reserved for LSB-Compliant Distribution lsb@lanana.org
+teapop-pgsql              Reserved for LSB-Compliant Distribution lsb@lanana.org
+thttpd                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+timeoutd                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+tinc                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+tinyproxy                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+tleds                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+tomcat                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+tomcat4                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+tpconfig                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+tpssmagent                Engenio Information Technologies, Inc   danny.pevoto@engenio.com
+tpssmmonitor              Engenio Information Technologies, Inc   danny.pevoto@engenio.com
+trafstats                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+transproxy                Reserved for LSB-Compliant Distribution lsb@lanana.org
+trustees                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+ud                        Reserved for LSB-Compliant Distribution lsb@lanana.org
+udhcpd                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+ugidd                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+ulogd                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+umountfs                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+umountnfs.sh              Reserved for LSB-Compliant Distribution lsb@lanana.org
+umsdos                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+upsd                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+ups-monitor               Reserved for LSB-Compliant Distribution lsb@lanana.org
+uptimed                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+uptimed.sh                Reserved for LSB-Compliant Distribution lsb@lanana.org
+urandom                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+usbmgr                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+usermin                   Caldera Systems Inc. dba The SCO Group  jcameron@webmin.com
+userv                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+vchkpw                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+vdr                       SUSE LINUX Products GmbH                ludwig.nussel@suse.de
+vje-delta                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+voicerd                   VoiceRD                                 cthorner@novacoast.com
+vold                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+vpnd                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+vsftpd                    vsftpd for SUSE Linux / Novell          mmj@suse.de
+vtun                      Reserved for LSB-Compliant Distribution lsb@lanana.org
+vvrts                     Info-Electronics Systems Inc.           bernard@info-electronics.com
+vvrtspg                   Info-Electronics Systems Inc.           bernard@info-electronics.com
+wanpipe                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+wasp                      Beginfinite, Inc                        mjb@gwava.com
+watchdog                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+wavelink                  Avalanche Mobility Center Applications  mvongunten@wavelink.com
+wdm                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+webfs                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+webmin                    Caldera Systems Inc. dba The SCO Group  jcameron@webmin.com
+welcome2l                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+whereami                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+winbind                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+wn                        Reserved for LSB-Compliant Distribution lsb@lanana.org
+wondershaper              SuSE LinuxProducts GmbH                 hvogel@suse.de
+wtrex                     Lymeware Corporation                    cfox@lymeware.com
+wu-ftpd                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+wwsympa                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+wwwoffle                  Reserved for LSB-Compliant Distribution lsb@lanana.org
+X                         Reserved for LSB-Compliant Distribution lsb@lanana.org
+xdasd                     OpenXDAS                                jcalcote@novell.com
+xdm                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+xess                      Applied Information Systems, Inc.       jim@ais.com
+xfs                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+xfstt                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+xfs-xtt                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+xinetd                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+xnptd                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+xpilots                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+xringd                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+xshipwars-server          Reserved for LSB-Compliant Distribution lsb@lanana.org
+xstrade                   Applied Information Systems, Inc.       jim@ais.com
+xtell                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+xtend                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+xttpd                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+yardradius                Reserved for LSB-Compliant Distribution lsb@lanana.org
+yiff-server               Reserved for LSB-Compliant Distribution lsb@lanana.org
+youbin                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+ypbind                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+yppasswdd                 Reserved for LSB-Compliant Distribution lsb@lanana.org
+ypserv                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+ypxfrd                    Reserved for LSB-Compliant Distribution lsb@lanana.org
+zebra                     Reserved for LSB-Compliant Distribution lsb@lanana.org
+zephyrd                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+zhm                       Reserved for LSB-Compliant Distribution lsb@lanana.org
+zmailer                   Reserved for LSB-Compliant Distribution lsb@lanana.org
+zmailer-ssl               Reserved for LSB-Compliant Distribution lsb@lanana.org
+zoneserver                Reserved for LSB-Compliant Distribution lsb@lanana.org
+zope                      Reserved for LSB-Compliant Distribution lsb@lanana.org

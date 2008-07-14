@@ -1,0 +1,29 @@
+#!/bin/bash
+# search for invalid requires.
+#
+export UNVALID_FILE_FOUND=false
+
+FORBIDDEN_REQ=`find $BUILD_ROOT/usr/src/packages/RPMS -name "*.rpm" | \
+    xargs --no-run-if-empty rpm -qp --requires| \
+    egrep "/usr/local/|/usr/share/bin"`
+
+for LINE in $FORBIDDEN_REQ; do
+        case "$LINE" in
+          /usr/local/httpd/cgi-bin*)
+            ;;
+          *)
+            case $BUILD_BASENAME in
+              5*|6*|7*)
+              ;;
+              *)
+                echo \""$LINE"\" is not allowed as Requires.
+                UNVALID_FILE_FOUND=true
+              ;;
+            esac
+          ;;
+        esac
+done
+
+test $UNVALID_FILE_FOUND = true && exit 1
+
+exit 0

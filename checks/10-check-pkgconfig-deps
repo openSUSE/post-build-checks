@@ -1,0 +1,105 @@
+#!/bin/bash
+
+# Check requires defined by pkgconfig .pc files.
+#
+# Copyright (C) 2005, 2007 Stanislav Brabec <sbrabec@suse.cz>, SuSE Linux
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# See http://www.gnu.org/copyleft/lesser.html
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+RC=0
+
+# Set default PKG_CONFIG_PATH.
+# Guess default path from existing directories.
+if test -d "$BUILD_ROOT/usr/lib64" ; then
+    BUILD_PKG_CONFIG_PATH=/usr/lib64/pkgconfig
+else
+    BUILD_PKG_CONFIG_PATH=/usr/lib/pkgconfig
+fi
+if test -d "$BUILD_ROOT/usr/share/pkgconfig" ; then
+    BUILD_PKG_CONFIG_PATH=$BUILD_PKG_CONFIG_PATH:/usr/share/pkgconfig
+fi
+
+PROFILE_PKG_CONFIG_PATH="$(unset PKG_CONFIG_PATH ; for FILE in $BUILD_ROOT/etc/profile.d/*.sh ; do source $FILE ; done >/dev/null 2>&1 ; echo $PKG_CONFIG_PATH)"
+if test -n "$PROFILE_PKG_CONFIG_PATH" ; then
+    BUILD_PKG_CONFIG_PATH="$BUILD_PKG_CONFIG_PATH:$PROFILE_PKG_CONFIG_PATH"
+fi
+
+# locate package file.
+# locate_pc name_without_pc
+function locate_pc {
+    local DIR
+    for DIR in $BUILD_PKG_CONFIG_PATH ; do
+	if test -f $BUILD_ROOT$DIR/$1.pc ; then
+	    LOCATE_PC=$DIR/$1.pc
+	    return
+	fi
+    done
+    return 1
+}
+
+# Assign file to RPM package.
+# assign_rpm file
+function assign_rpm {
+    ASSIGN_RPM=$(chroot $BUILD_ROOT rpm --queryformat '%{NAME}\n' -qf $1)
+}
+
+# Check requirements of RPM package.
+# check_rpm_requires rpm
+function check_rpm_requires {
+    PACK=$1
+    PACK=${PACK##$BUILD_ROOT}
+    for PC in $(chroot $BUILD_ROOT rpm -qlp $PACK | grep '.*/pkgconfig/.*\.pc$') ; do
+	if grep -q 'Requires:.*,' $BUILD_ROOT$PC ; then
+	    :
+#	    echo "Warning: Deprecated use of \",\" in \"Requires:\" of file $PC."
+	fi
+	for REQ in $(eval $(sed -n 's/^\([^ =]*\)=\(.*\)/\1="\2"/p' <$BUILD_ROOT$PC) ; eval echo $(sed -n 's/[^ ]*= [^ ][^ ]*//g;s/Requires://p' <$BUILD_ROOT$PC)) ; do
+	    assign_rpm $PC
+	    RPM=$ASSIGN_RPM
+	    if locate_pc $REQ ; then
+		assign_rpm $LOCATE_PC
+		if ! chroot $BUILD_ROOT rpm -q --requires $RPM | grep -q ^$ASSIGN_RPM'\( \|$\)' ; then
+		    if test "$ASSIGN_RPM" != "$RPM" ; then
+			if test "${RPM#*-devel}" ; then
+			    echo "Warning: Package $RPM should contain \"Requires: $ASSIGN_RPM\" in ($PC requires $LOCATE_PC).
+Think about splitting -devel subpackage."
+			else
+			    echo "Error: Missing \"Requires: $ASSIGN_RPM\" in $RPM ($PC requires $REQ.pc)."
+			    RC=1
+			fi
+		    fi
+		fi
+	    else
+		echo "Error: Required file $REQ.pc not found (required by $PC from $RPM).
+Please add proper package to neededforbuild to complete this check."
+		RC=1
+	    fi
+	done
+    done
+}
+
+echo "... testing devel dependencies required by pkgconfig .pc files"
+
+shopt -s nullglob
+IFS=$IFS":,"
+
+for RPM in $BUILD_ROOT/usr/src/packages/RPMS/*/*.rpm ; do
+    check_rpm_requires $RPM
+done
+
+if test $RC -gt 0 ; then
+    echo "All errors are just warnings for now.
+If you have problems with check-pkgconfig-deps, please contact sbrabec@suse.cz."
+fi
+
+exit 0
+exit $RC

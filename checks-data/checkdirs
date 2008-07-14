@@ -1,0 +1,106 @@
+#!/usr/bin/perl
+
+@exclude = qw{
+  /CD1
+  /etc/hotplug /etc/hotplug/usb
+  /emul /emul/ia32-linux
+  /usr/include/NOVLam /usr/libexec /var/nam
+  /opt/novell/man /opt/novell/man/man1 /opt/novell/man/man5 /opt/novell/man/man7 /opt/novell/man/man8
+  /var/opt/novell /var/opt/novell/tomcat4 /var/opt/novell/tomcat4/webapps /var/opt/novell/tomcat4/webapps/nps
+  /var/opt/novell/tomcat4/webapps/welcome /var/opt/novell/tomcat4/webapps/welcome/WEB-INF
+  /var/opt/novell/tomcat4/webapps/welcome/WEB-INF/XMLData /var/opt/novell/tomcat4/webapps/welcome/images
+  /var/opt/novell/iManager
+};
+
+%dirs = ();
+%exclude = map {$_ => 1} @exclude;
+
+my $pname = $::ENV{PNAME};
+my $rname = '';
+if (@ARGV) {
+  $rname = shift @ARGV;
+  $rname = "$rname: " if $rname ne '';
+}
+
+exit 0 if ( $pname eq "busybox-links");
+
+my %myfiles;
+
+if ( $::ENV{BUILD_BASENAME} =~ /\+kde$/ ) {
+    $myfiles{'/usr/share/locale/en_CA'} = 1;
+    $myfiles{'/usr/share/locale/en_CA/LC_MESSAGES'} = 1;
+    $myfiles{'/usr/share/locale/fo'} = 1;
+    $myfiles{'/usr/share/locale/fo/LC_MESSAGES'} = 1;
+    $myfiles{'/usr/share/locale/gu'} = 1;
+    $myfiles{'/usr/share/locale/gu/LC_MESSAGES'} = 1;
+    $myfiles{'/usr/share/locale/ku'} = 1;
+    $myfiles{'/usr/share/locale/ku/LC_MESSAGES'} = 1;
+    $myfiles{'/usr/share/locale/pa'} = 1;
+    $myfiles{'/usr/share/locale/pa/LC_MESSAGES'} = 1;
+    $myfiles{'/usr/share/locale/rw'} = 1;
+    $myfiles{'/usr/share/locale/rw/LC_MESSAGES'} = 1;
+    $myfiles{'/usr/share/locale/ar'} = 1;
+    $myfiles{'/usr/share/locale/ar/LC_MESSAGES'} = 1;
+    $myfiles{'/usr/share/locale/mi'} = 1;
+    $myfiles{'/usr/share/locale/mi/LC_MESSAGES'} = 1;
+    $myfiles{'/usr/share/locale/mr'} = 1;
+    $myfiles{'/usr/share/locale/mr/LC_MESSAGES'} = 1;
+    $myfiles{'/usr/share/locale/mt'} = 1;
+    $myfiles{'/usr/share/locale/mt/LC_MESSAGES'} = 1;
+    $myfiles{'/usr/share/locale/nso'} = 1;
+    $myfiles{'/usr/share/locale/nso/LC_MESSAGES'} = 1;
+    $myfiles{'/usr/share/locale/oc'} = 1;
+    $myfiles{'/usr/share/locale/oc/LC_MESSAGES'} = 1;
+    $myfiles{'/usr/share/locale/te'} = 1;
+    $myfiles{'/usr/share/locale/te/LC_MESSAGES'} = 1;
+    $myfiles{'/usr/share/locale/xh'} = 1;
+    $myfiles{'/usr/share/locale/xh/LC_MESSAGES'} = 1;
+    $myfiles{'/usr/share/locale/zu'} = 1;
+    $myfiles{'/usr/share/locale/zu/LC_MESSAGES'} = 1;
+    $myfiles{'/usr/share/pkgconfig'} = 1;
+}
+
+while (<STDIN>) {
+  chomp;
+  $myfiles{$_} = 1;
+  while (1) {
+    last unless s/\/[^\/]*$//;
+    last if $_ eq '' || $dirs{$_} || $exclude{$_};
+    $dirs{$_} = 1;
+  }
+}
+
+@dirs = sort keys %dirs;
+@dirs = grep {!$myfiles{$_}} @dirs;
+
+# ignore /opt/gnome for now in STABLE
+if ( $::ENV{BUILD_BASENAME} !~ /^[0-9]/ && $::ENV{BUILD_BASENAME} !~ /^sle/ && $::ENV{BUILD_BASENAME} !~ /^ul/ ) {
+    @dirs = grep {$_ !~ /^\/opt\/gnome/ } @dirs;
+}
+
+# batch files through rpm in chunks of 20
+$num = 0;
+
+while (@dirs) {
+  @dirs20 = splice(@dirs, 0, 20);
+  open(F, "rpm -qf '".join("' '", @dirs20)."' 2>&1 |") || die("rpm pipe\n");
+  while (<F>) {
+    chomp;
+    next unless / /;
+    next if /^tset: standard error: Invalid argument/;
+    next if /^stty: standard input: Invalid argument/;
+    next if /error while loading shared libraries:/;
+    print "${rname}directories not owned by a package:\n" if $num == 0;
+    if (/file (.*) is not owned/) {
+      print " - $1\n";
+    } elsif (/file (.*): No such/) {
+      print " - $1\n";
+    } else {
+      print " - $_\n";
+    }
+    $num++;
+  }
+  close F;
+}
+
+exit $num ? 1 : 0;

@@ -1,0 +1,58 @@
+#!/usr/bin/perl
+# search for files packaged more than once
+#
+use strict;
+my $had_errors = 0;
+my $build_root = $::ENV{BUILD_ROOT};
+my @RPMS = ();
+
+open ( ALL_RPMS , "find $build_root/usr/src/packages/RPMS -name \"*.rpm\" |");
+while ( my $cur = <ALL_RPMS> ) {
+    chomp ( $cur );
+    $cur =~ s/^$build_root//;
+    push @RPMS, $cur;
+}
+close ( ALL_RPMS );
+
+if ( $#RPMS < 1 ) {
+    exit 0;
+}
+
+my %FILES = ();
+
+for my $cur (@RPMS) {
+  my $rpmname = `chroot $build_root rpm -qp --qf '%{NAME}' $cur`;
+  open ( FILELIST , "chroot $build_root rpm -qplv $cur |");
+  while ( my $file = <FILELIST> ) {
+     chomp ( $file );
+     next if ( $file =~ /^d/ );
+     my @line = split ('\s+',$file);
+     my $filename = "";
+     while (my $file_too = pop(@line)) {
+        if ($file_too eq "->") {
+	    # this was a symlink target
+	    $filename = "";
+        } else {
+	    $filename = $file_too.($filename eq "" ? "" : " ").$filename;
+        }
+        last if ($#line == 7);
+     }
+     if ( $FILES{$filename} ) {
+	#printf "ERROR: $rpmname: $filename already packaged in package $FILES{$filename}\n";
+	printf "WARNING: $rpmname: $filename already packaged in package $FILES{$filename}\n";
+	$had_errors = 1;
+	$FILES{$filename} .= ",$rpmname";
+     } else {
+	$FILES{$filename} = $rpmname;
+     }
+  }
+  close ( FILELIST );
+}
+
+#if ( $had_errors ) {
+#   printf "found ERRORS\n";
+#   exit 1;
+#}
+
+exit 0;
+

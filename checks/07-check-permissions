@@ -1,0 +1,43 @@
+#!/bin/bash
+
+echo "... testing for modified permissions"
+
+SCRIPT_ARG=-e
+test $BUILD_BASENAME = 8.0-i386 && SCRIPT_ARG=
+test $BUILD_BASENAME = 8.0-i386+kde && SCRIPT_ARG=
+HAD_ERRORS=0
+
+for i in `find $BUILD_ROOT/usr/src/packages/RPMS -name "*.rpm" | sort` ; do
+    test -f $i || continue
+    NAME=`rpm -qp --qf "%{NAME}" $i`
+    test -f $BUILD_ROOT/etc/sysconfig/security || continue
+    test -d $BUILD_ROOT/proc/sys || mount -n -tproc none $BUILD_ROOT/proc
+    chroot $BUILD_ROOT rpm -Vp ${i#$BUILD_ROOT} > $BUILD_ROOT/.build_patchrpmcheck1
+    sed -e "s@^PERMISSION_SECURITY\(.*\)secure@PERMISSION_SECURITY\1easy@" \
+	$BUILD_ROOT/etc/sysconfig/security > $BUILD_ROOT/etc/sysconfig/security.tmp
+    mv $BUILD_ROOT/etc/sysconfig/security $BUILD_ROOT/etc/sysconfig/security.bak
+    mv $BUILD_ROOT/etc/sysconfig/security.tmp $BUILD_ROOT/etc/sysconfig/security
+    chroot $BUILD_ROOT /sbin/SuSEconfig --module permissions >/dev/null 2>&1
+    chroot $BUILD_ROOT rpm -Vp ${i#$BUILD_ROOT} > $BUILD_ROOT/.build_patchrpmcheck2
+    mv $BUILD_ROOT/etc/sysconfig/security.bak $BUILD_ROOT/etc/sysconfig/security
+    chroot $BUILD_ROOT /sbin/SuSEconfig --module permissions >/dev/null 2>&1
+    
+    umount -n $BUILD_ROOT/proc
+    if ! cmp -s $BUILD_ROOT/.build_patchrpmcheck1 $BUILD_ROOT/.build_patchrpmcheck2; then
+	echo "--------------------------------------------------------------------"
+	echo "package: $NAME"
+	echo "SuSEconfig.permissions modified files that are not properly handled!"
+	echo "this will break rpm -V, ask ro for details."
+	echo "diff for both runs of rpm -V:"
+	diff -u $BUILD_ROOT/.build_patchrpmcheck1 $BUILD_ROOT/.build_patchrpmcheck2 | tail -n+4 | grep -v '^ '
+	echo "--------------------------------------------------------------------"
+	HAD_ERRORS=1
+    fi
+    rm -f $BUILD_ROOT/.build_patchrpmcheck1 $BUILD_ROOT/.build_patchrpmcheck2
+done
+
+if test "$HAD_ERRORS" = 1 ; then
+	touch $BUILD_IS_RUNNING
+	exit 1
+fi
+exit 0

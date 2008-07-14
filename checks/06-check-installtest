@@ -1,0 +1,82 @@
+#!/bin/bash
+
+echo "... testing for pre/postinstall scripts that are not idempotent"
+
+function umount_all () {
+        test -n "$BUILD_ROOT" && {
+            if test -f /proc/mounts ; then
+                REAL_BR=$(cd $BUILD_ROOT; pwd -P)
+                umount -n `sed -ne "s@.* \(${REAL_BR}/[^ ]*\) .*@\1@p" /proc/mounts` 2>/dev/null
+            else
+                find $BUILD_ROOT/* -depth -xdev -type d -print0 | xargs -0 umount 2>/dev/null
+            fi
+        }
+}
+
+SCRIPT_ARG=-e
+test $BUILD_BASENAME = 8.0-i386 && SCRIPT_ARG=
+test $BUILD_BASENAME = 8.0-i386+kde && SCRIPT_ARG=
+test $BUILD_BASENAME = sles9-i386 -a "$PNAME" = NDSserv && SCRIPT_ARG=
+
+for i in `find $BUILD_ROOT/usr/src/packages/RPMS -name "*.rpm" | sort` ; do
+    test -f $i || continue
+    pre_p=`chroot $BUILD_ROOT rpm -qp --qf '%{PREINPROG}' ${i#$BUILD_ROOT}`
+    post_p=`chroot $BUILD_ROOT rpm -qp --qf '%{POSTINPROG}' ${i#$BUILD_ROOT}`
+    preun_p=`chroot $BUILD_ROOT rpm -qp --qf '%{PREUNPROG}' ${i#$BUILD_ROOT}`
+    postun_p=`chroot $BUILD_ROOT rpm -qp --qf '%{POSTUNPROG}' ${i#$BUILD_ROOT}`
+    pre=`chroot $BUILD_ROOT rpm -qp --qf '%{PREIN}' ${i#$BUILD_ROOT}`
+    post=`chroot $BUILD_ROOT rpm -qp --qf '%{POSTIN}' ${i#$BUILD_ROOT}`
+    preun=`chroot $BUILD_ROOT rpm -qp --qf '%{PREUN}' ${i#$BUILD_ROOT}`
+    postun=`chroot $BUILD_ROOT rpm -qp --qf '%{POSTUN}' ${i#$BUILD_ROOT}`
+    test "$pre" = "(none)" -a "$post" = "(none)" -a "$preun" = "(none)" -a "$postun" = "(none)" && continue
+    test -d $BUILD_ROOT/proc/sys || mount -n -tproc none $BUILD_ROOT/proc
+    chroot $BUILD_ROOT rpm -Vp ${i#$BUILD_ROOT} > $BUILD_ROOT/.build_patchrpmcheck1
+    if test "$pre" != "(none)" -a "$pre_p" != "<lua>" ; then
+	echo "$pre" > $BUILD_ROOT/.build_patchrpmcheck_scr
+	chroot $BUILD_ROOT sh $SCRIPT_ARG /.build_patchrpmcheck_scr 2 || {
+	    echo "preinstall script of ${i##*/} failed"
+	    umount_all
+	    touch $BUILD_IS_RUNNING
+	    exit 1
+	}
+    fi
+    if test "$post" != "(none)" -a "$post_p" != "<lua>" ; then
+	echo "$post" > $BUILD_ROOT/.build_patchrpmcheck_scr
+	chroot $BUILD_ROOT sh $SCRIPT_ARG /.build_patchrpmcheck_scr 2 || {
+	    echo "postinstall script of ${i##*/} failed"
+	    umount_all
+	    touch $BUILD_IS_RUNNING
+	    exit 1
+	}
+    fi
+    if test "$preun" != "(none)" -a "$preun_p" != "<lua>" ; then
+	echo "$preun" > $BUILD_ROOT/.build_patchrpmcheck_scr
+	chroot $BUILD_ROOT sh $SCRIPT_ARG /.build_patchrpmcheck_scr 1 || {
+	    echo "preuninstall script of ${i##*/} failed"
+	    umount_all
+	    touch $BUILD_IS_RUNNING
+	    exit 1
+	}
+    fi
+    if test "$postun" != "(none)" -a "$postun_p" != "<lua>" ; then
+	echo "$postun" > $BUILD_ROOT/.build_patchrpmcheck_scr
+	chroot $BUILD_ROOT sh $SCRIPT_ARG /.build_patchrpmcheck_scr 1 || {
+	    echo "postuninstall script of ${i##*/} failed"
+	    umount_all
+	    touch $BUILD_IS_RUNNING
+	    exit 1
+	}
+    fi
+    chroot $BUILD_ROOT rpm -Vp ${i#$BUILD_ROOT} > $BUILD_ROOT/.build_patchrpmcheck2
+    umount_all
+    if ! cmp -s $BUILD_ROOT/.build_patchrpmcheck1 $BUILD_ROOT/.build_patchrpmcheck2; then
+	echo "pre/postinstall/uninstall script of ${i##*/} modifies filelist!"
+	echo "filelist diff:"
+	diff -u $BUILD_ROOT/.build_patchrpmcheck1 $BUILD_ROOT/.build_patchrpmcheck2 | grep -v '^ '
+	touch $BUILD_IS_RUNNING
+	exit 1
+    fi
+    rm -f $BUILD_ROOT/.build_patchrpmcheck1 $BUILD_ROOT/.build_patchrpmcheck2 $BUILD_ROOT/.build_patchrpmcheck_scr
+done
+
+exit 0

@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# Verify, that gconf scriptlets use new style scriptlet macros or at
+# least their expansion and that prereq is used.
+#
+# Copyright (C) 2007 Stanislav Brabec <sbrabec@suse.cz>, SuSE Linux
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# See http://www.gnu.org/copyleft/lesser.html
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+RC=0
+
+echo "... testing GConf scriptlet presence"
+
+if ! test -d $BUILD_ROOT/etc/gconf/schemas ; then
+    exit 0
+fi
+
+for RPM in $BUILD_ROOT/usr/src/packages/RPMS/*/*.rpm ; do
+    PREREQ_NEEDED=false
+    for FILE in $(rpm -r $BUILD_ROOT -qlp $RPM | grep '^/etc/gconf/schemas/.*\.schemas$') ; do
+	PREREQ_NEEDED=true
+	PACKAGE=$(rpm -qp $RPM --queryformat=%{name})
+	if ! rpm -r $BUILD_ROOT -q --scripts $PACKAGE |
+		sed '1,/preuninstall/d' |
+		grep -q "test -f etc/gconf/schemas/outdated/${FILE##*/}" ; then
+	    echo "ERROR: $PACKAGE: Missing or incorrect schemas installation for $FILE"
+	    RC=1
+	fi
+    done
+    if $PREREQ_NEEDED ; then
+	if ! rpm -r $BUILD_ROOT -q --requires $PACKAGE | grep -q '^/usr/bin/gconftool-2 *$' ; then
+	    echo "ERROR: Missing or incorrectly used %gconf_schemas_prereq"
+	    RC=1
+	fi
+    fi
+done
+
+if test "$RC" = 1 ; then
+    echo "       See /etc/rpm/macros.gconf2 in package gconf2-devel for correct installation for > 10.2"
+fi
+exit $RC

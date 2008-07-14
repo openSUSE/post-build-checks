@@ -1,0 +1,156 @@
+#! /bin/bash
+
+# Check binary kernel logfiles for errors in km_* packages.
+# Finally, email notifications should be sent to maintainers/etc.
+
+case "$PNAME" in
+    kernel-source | kernel-dummy | kernel-syms)
+	exit 0 ;;
+    kernel-*)
+    	;;
+    *)
+	exit 0 ;;
+esac
+
+echo "${0##*/}: checking for errors"
+
+if [ -z "$LOGFILE" ]; then
+    if [ -n "$BUILD_ROOT" -a "$AUTOBUILD" != true ]; then
+	LOGFILE=$BUILD_ROOT/.build.log
+    fi
+fi
+
+tmpdir=$(mktemp -d /tmp/${0##*/}.XXXXXX)
+trap "rm -rf $tmpdir" EXIT
+mkdir $tmpdir/modules
+
+# If no LOGFILE was specified, read from standard input
+if [ -z "$LOGFILE" ]; then
+    LOGFILE=$tmpdir/log
+    cat > $LOGFILE
+fi
+exec 3> $tmpdir/out
+
+if [ -n "$PNAME" ]; then
+    package=$PNAME
+else
+    # Determine main package name from the logfile
+    package=$(sed -ne 's:^processing specfile .*/\([^/]*\).spec\.\.\.$:\1:p' \
+		  $LOGFILE \
+	      | head -n 1)
+fi
+
+# Quote a string for use in a basic regular expression.
+quote_bre()
+{
+	echo "$1" | sed -e 's:\([][^$/.*\\]\):\\\1:g'
+}
+
+# Generate a list of external module directories.
+extmod_re="\/usr\/src\/packages\/BUILD\/kernel-[^/]*-[^/]*\/modules-[^/]*"
+extmod_subdirs=$(sed -ne "s/.*Entering directory \`$extmod_re\/\\([^/]*\\)'$/\1/p" $LOGFILE \
+		 | sort -u)
+
+# Extract the log sections of all external module packages.
+for which in $extmod_subdirs; do
+    awk '
+    /Entering directory `'"$extmod_re"'\/'"$which'"'$/ { on=1 }
+    on	    { print }
+    /Leaving directory `'"$extmod_re"'\/'"$which'"'$/ { on=0 }
+    ' $LOGFILE > $tmpdir/modules/$which
+done
+
+# Set the error flag for external modules which fail.
+X="$(grep '^External module error: .* failed$' $LOGFILE)"
+echo -n "$X" \
+| while read line; do
+    which=$(echo "$line" | \
+	    sed -e 's/^External module error: .*\///' \
+		-e 's/ failed//')
+    if [ -e $tmpdir/modules/$which ]; then
+	touch $tmpdir/modules/$which.errors
+    else
+	echo "$line" >> $tmpdir/main.errors
+    fi
+done
+
+# Go through the list of symbols that modpost could not resolve. Some of these
+# symbols may be defined in another module that was built in an independent
+# kbuild run (i.e., the symbol may be in a different external module). This
+# means that the symbol will not have modversions attached, but it will still
+# resolve correctly. Symbols that don't resolve are caught by depmod anyways.
+X="$(grep '^\*\*\* Warning: .* undefined!$' $LOGFILE)"
+echo -n "$X" \
+| while read line; do
+    found=
+    for which in $(grep -rl "^$(quote_bre "$line")$" $tmpdir/modules); do
+	    touch $which.errors
+	    found=1
+    done
+    [ -n "$found" ] && break
+    echo "$line" >> $tmpdir/main.errors
+done
+
+# Go through the list of undefined symbols. The WARNING: messages are generated
+# by depmod; these symbols are not resolvable.
+X="$(grep '^WARNING: .* needs unknown symbol' $LOGFILE)"
+echo -n "$X" \
+| while read line; do
+    module="$(echo "$line" | sed -ne 's:.*\/\([^/]*\.ko\).*:\1:p')"
+    if which="$(grep -rlw "$(quote_bre "$module")" $tmpdir/modules)"; then
+	entry=$(echo "$which" | head -n 1)
+    else
+	entry=$tmpdir/main
+    fi
+    echo "$line" >> $entry.errors
+done
+
+trailer=
+emit_message() {
+    local pkg=$1
+
+    if [ -z "$trailer" ]; then
+	trailer=1
+	echo "<status-notifications>"
+    fi
+
+    echo "<notify package=\"$pkg\">"
+    cat
+    echo "</notify>"
+}
+
+shopt -s nullglob
+for flagfile in $tmpdir/*.errors $tmpdir/modules/*.errors; do
+    which=${flagfile##*/}
+    which=${which%.errors}
+
+    pkg=
+    if [ $which != main ]; then
+	# Try to find out the package name for the external
+	# module directory.
+	mod_path=/usr/src/kernel-modules/$which
+	if [ -n "$BUILD_ROOT" ]; then
+	    chroot="chroot $BUILD_ROOT"
+	else
+	    chroot=
+	fi
+	pkg=$($chroot /bin/rpm -qf --queryformat '%{NAME}\n' $mod_path)
+    fi
+    : ${pkg:=$package}
+
+    echo "errors in $pkg found"
+    message="$(
+	[ -e ${flagfile%.errors} ] \
+	    && cat ${flagfile%.errors}
+	cat $flagfile)"
+    emit_message "$pkg" >&3 < <(echo "$message")
+done
+
+if [ -n "$trailer" ]; then
+    trailer=
+    echo "</status-notifications>" >&3
+fi
+
+exec 3>&-
+
+cat $tmpdir/out >> "$LOGFILE"

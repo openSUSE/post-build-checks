@@ -1,0 +1,564 @@
+#!/bin/bash
+# search for invalid files and  not FHS conform directories
+#
+
+echo "... checking filelist"
+export UNVALID_FILE_FOUND=false
+
+ALL_RPMS=`find $BUILD_ROOT/usr/src/packages/RPMS -name "*.rpm" ! -name "*-debuginfo*.rpm" -a ! -name "*-debugsource*.rpm" `
+
+if [ ! -z "$ALL_RPMS" ] ; then
+  chroot $BUILD_ROOT rpm -qlv filesystem | sed -ne "/^d/s@.* @@p" | sort > $BUILD_ROOT/.dirlist1
+  cp -p $BUILD_ROOT/usr/lib/build/checks-data/checkdirs $BUILD_ROOT/.checkdirs
+  for RPM in $ALL_RPMS; do
+    RPM_ARCH=`rpm -qp --qf "%{ARCH}" $RPM`
+    ALL_RPM_LINES=`rpm -qpl $RPM | sed -e "s@ @_@g"`
+    for LINE in $ALL_RPM_LINES; do
+      case "$LINE" in
+	*contains_no_files*)
+	  PRPM=`package_name $RPM`
+	  case $PRPM in
+            sapdb|\
+	    core-release)
+            ;;
+            *)
+	      echo $RPM: An empty RPM is not allowed anymore in SuSE Linux
+              UNVALID_FILE_FOUND=true
+            ;;
+          esac
+	;;
+        /usr/dict)
+          PRPM=`package_name $RPM`
+          case $PRPM in
+            eazy)
+            ;;
+            *)
+              echo `package_name $RPM`: \""$LINE"\" is not allowed anymore in FHS 2.2.
+	      UNVALID_FILE_FOUND=true
+            ;;
+          esac
+        ;;
+	/opt/novell|/opt/novell/*)
+          PRPM=`package_name $RPM`
+          case $PRPM in
+            CASA*|gnome*|*openwbem*)
+            echo "This package is not allowed to store files in /opt/novell. Please contact autobuild@suse.de if you disagree".
+                          UNVALID_FILE_FOUND=true
+	    ;;
+	  *)
+            ;;
+          esac
+        ;;
+        /var/locale|/var/locale/*)
+          PRPM=`package_name $RPM`
+          case $PRPM in
+            atokx)
+            ;;
+            *)
+              echo `package_name $RPM`: \""$LINE"\" is not allowed anymore in FHS 2.2.
+	      UNVALID_FILE_FOUND=true
+            ;;
+          esac
+        ;;
+        # This one are explicit forbidden
+	/etc/X11/app-defaults/*|\
+	/usr/local/man/*/*|\
+	/var/lib/games|\
+	/var/lib/games/*|\
+	/usr/sbin/*/*|\
+	/sbin/init.d|\
+	/sbin/init.d/*|\
+        /bin/*/*)
+          echo `package_name $RPM`: \""$LINE"\" is not allowed anymore in FHS 2.2.
+          UNVALID_FILE_FOUND=true
+        ;;
+	/usr/local/ftp*|\
+	/usr/local/http*)
+          echo `package_name $RPM`: \""$LINE"\" is not allowed anymore on SL 8.1.
+	  echo "Please use /srv for ftp and www data"
+          UNVALID_FILE_FOUND=true
+        ;;
+
+	# This one are forbidden for YaST2
+	/usr/lib/YaST2/*.ycp|\
+	/usr/lib/YaST2/*.y2cc|\
+	/usr/lib/YaST2/*.*.scr)
+          echo `package_name $RPM`: \""$LINE"\" is not allowed anymore in YaST2
+          UNVALID_FILE_FOUND=true
+        ;;
+        # /usr/games
+        /usr/games/bin|\
+        /usr/games/lib|\
+        /usr/games/*/*)
+          echo `package_name $RPM`: \""$LINE"\" is not allowed anymore in FHS 2.2.
+          echo static data has to be in /usr/share/games, variable in /var/games
+          UNVALID_FILE_FOUND=true
+        ;;
+	# Special directories and files allowed for /etc/sysconfig:
+	/etc/sysconfig/cbq|\
+	/etc/sysconfig/scripts|\
+	/etc/sysconfig/scripts/*|\
+	/etc/sysconfig/network|\
+	/etc/sysconfig/network/*|\
+	/etc/sysconfig/hardware|\
+	/etc/sysconfig/hardware/*|\
+	/etc/sysconfig/isdn|\
+	/etc/sysconfig/isdn/scripts|\
+	/etc/sysconfig/isdn/scripts/*|\
+	/etc/sysconfig/SuSEfirewall2.d|\
+	/etc/sysconfig/SuSEfirewall2.d/*|\
+	/etc/sysconfig/uml)
+	;;
+	/usr/share/info/dir)
+	  PRPM=`package_name $RPM`
+	  case $PRPM in
+            info)
+            ;;
+            *)
+              echo $PRPM: \""$LINE"\" is not allowed anymore in SuSE Linux.
+              UNVALID_FILE_FOUND=true
+            ;;
+          esac
+	;;
+	/opt/gnome*)
+          PRPM=`package_name $RPM`
+          case $PRPM in
+            opt_gnome-compat*)
+            ;;
+            *)
+              echo $PRPM: \""$LINE"\" is not allowed anymore in SuSE Linux.
+              UNVALID_FILE_FOUND=true
+            ;;
+          esac
+        ;;
+	# perl 5.8.1
+	/usr/lib/perl5/site_perl/*)
+          PRPM=`package_name $RPM`
+	  test "$PRPM" != perl && {
+	    echo $PRPM: site_perl is not allowed anymore in SuSE Linux.
+	    UNVALID_FILE_FOUND=true
+	  }
+        ;;
+	/usr/lib/perl5/vendor_perl/5.*/auto|\
+	/usr/lib/perl5/vendor_perl/5.*/*-linux-*/auto)
+          PRPM=`package_name $RPM`
+	  test "$PRPM" != perl && {
+	    echo $PRPM: auto directory is included in the perl package
+	    UNVALID_FILE_FOUND=true
+	  }
+        ;;
+	/usr/lib/debug/*)
+          PRPM=`package_name $RPM`
+	  case $PRPM in
+	    *-debug|*-debuginfo|*-debugsource)
+		;;
+	    *)
+		echo "$PRPM: \"$LINE\" may only be packaged in the -debuginfo subpackage"
+		UNVALID_FILE_FOUND=true
+		;;
+	  esac
+        ;;
+	# exceptions for CVS/RCS/liveeval
+	/usr/share/doc/howto/en/txt/RCS|\
+	/usr/share/YaST2/data/devtools/*|\
+	/usr/share/liveeval/*|\
+	/var/lib/nfs/sm.bak|\
+	/var/cache/pegasus/ssl.orig|\
+	/usr/share/doc/packages/macutils/doc/README.crc.orig|\
+	/usr/src/dicts/rus-ispell/old/README.orig|\
+	/usr/share/doc/packages/WindowMaker/menu.orig|\
+	/usr/src/debug/xgammon-0.98.orig|\
+	/usr/lib/rpm/gnupg/pubring.gpg~)
+	;;
+	*~)
+          PRPM=`package_name $RPM`
+	  test "$PRPM" != pd && {
+	    echo $PRPM: \""$LINE"\" is not allowed anymore in SuSE Linux.
+	    UNVALID_FILE_FOUND=true
+	  }
+        ;;
+        */CVS|*/CVS/*|*/.cvsignore|*/.svn|\
+        */RCS|*/RCS/*|*,v|\
+	*.bak|*/.xvpics|*.orig|*.orig.gz|\
+	/usr/share/*/.libs*|\
+	/usr/share/*/.deps*|\
+	/var/adm/fillup-templates/rc.config.*|\
+	/var/adm/setup|\
+	/etc/httpd/*|\
+	/etc/sysconfig/*|\
+	/etc/rc.config.d/*|\
+	/etc/init.d/*/*|\
+	/usr/share/locale/LC_MESSAGES|\
+	/usr/X11R6/lib/locale|\
+	/usr/X11R6/lib/X11/locale/LC_MESSAGES*)
+	  echo `package_name $RPM`: \""$LINE"\" is not allowed anymore in SuSE Linux.
+	  UNVALID_FILE_FOUND=true
+	;;
+	# whitelist for now
+	/lib/klibc*|/lib64/klibc*|/lib/lilo*)
+	;;
+	/lib/*.la|/lib/*.a|/lib64/*.la|/lib64/lib*.a)
+	  echo `package_name $RPM`: \""$LINE"\" is not allowed anymore in SuSE Linux.
+	  echo "please move la files, static libs and .so symlinks out of /"
+	  UNVALID_FILE_FOUND=true
+	;;
+	# blocking no in favour of nb/nn:
+	/opt/gnome/share/locale/no|\
+	/opt/gnome/share/locale/no/*|\
+	/opt/kde3/share/locale/no|\
+	/opt/kde3/share/locale/no/*|\
+	/usr/share/locale/no|\
+	/usr/share/locale/no/*|\
+	/usr/share/vim/vim63/lang/no|\
+	/usr/share/vim/vim63/lang/no/*)
+	  echo `package_name $RPM`: \""$LINE"\" is not allowed anymore in SuSE Linux.
+	  echo "Please use nb or nb_NO (and nn for nynorsk)"
+	  echo "see https://bugzilla.novell.com/show_bug.cgi?id=42748"
+	  UNVALID_FILE_FOUND=true
+	;;
+	/usr/X11R6/include/X11|\
+	/usr/X11R6/include/X11/*|\
+	/usr/X11R6/lib/X11|\
+	/usr/X11R6/lib/X11/*|\
+	/usr/X11R6/lib/modules|\
+	/usr/X11R6/lib/modules/*|\
+	/usr/X11R6/lib64/modules|\
+	/usr/X11R6/lib64/modules/*|\
+	/usr/X11R6/lib/X11/app-defaults|\
+	/usr/X11R6/lib/X11/app-defaults/*|\
+	/usr/X11R6/lib64/X11/app-defaults|\
+	/usr/X11R6/lib64/X11/app-defaults/*)
+	  echo `package_name $RPM`: \""$LINE"\" is not allowed anymore in SuSE Linux.
+	  echo "Please use the updated paths for Xorg 7.1 and above"
+	  UNVALID_FILE_FOUND=true
+	;;
+	/sbin/conf.d/SuSEconfig.automake|\
+	/sbin/conf.d/SuSEconfig.cjk-latex|\
+	/sbin/conf.d/SuSEconfig.desktop-file-utils|\
+	/sbin/conf.d/SuSEconfig.fonts|\
+	/sbin/conf.d/SuSEconfig.gdm|\
+	/sbin/conf.d/SuSEconfig.ghostscript-cjk|\
+	/sbin/conf.d/SuSEconfig.glib2|\
+	/sbin/conf.d/SuSEconfig.gnome-vfs2|\
+	/sbin/conf.d/SuSEconfig.groff|\
+	/sbin/conf.d/SuSEconfig.gtk2|\
+	/sbin/conf.d/SuSEconfig.guile|\
+	/sbin/conf.d/SuSEconfig.icu|\
+	/sbin/conf.d/SuSEconfig.isdn|\
+	/sbin/conf.d/SuSEconfig.ispell|\
+	/sbin/conf.d/SuSEconfig.kde|\
+	/sbin/conf.d/SuSEconfig.kdm3|\
+	/sbin/conf.d/SuSEconfig.libxml2|\
+	/sbin/conf.d/SuSEconfig.lyx-cjk|\
+	/sbin/conf.d/SuSEconfig.mailman|\
+	/sbin/conf.d/SuSEconfig.news|\
+	/sbin/conf.d/SuSEconfig.pango|\
+	/sbin/conf.d/SuSEconfig.pbs|\
+	/sbin/conf.d/SuSEconfig.perl|\
+	/sbin/conf.d/SuSEconfig.permissions|\
+	/sbin/conf.d/SuSEconfig.postfix|\
+	/sbin/conf.d/SuSEconfig.prelink|\
+	/sbin/conf.d/SuSEconfig.scim|\
+	/sbin/conf.d/SuSEconfig.scpm|\
+	/sbin/conf.d/SuSEconfig.scrollkeeper|\
+	/sbin/conf.d/SuSEconfig.sendmail|\
+	/sbin/conf.d/SuSEconfig.sgml-skel|\
+	/sbin/conf.d/SuSEconfig.susehelp|\
+	/sbin/conf.d/SuSEconfig.syslog-ng|\
+	/sbin/conf.d/SuSEconfig.tetex|\
+	/sbin/conf.d/SuSEconfig.texlive|\
+	/sbin/conf.d/SuSEconfig.tuxpaint|\
+	/sbin/conf.d/SuSEconfig.wdm|\
+	/sbin/conf.d/SuSEconfig.words|\
+	/sbin/conf.d/SuSEconfig.xdm|\
+	/sbin/conf.d/SuSEconfig.xjdic|\
+	/sbin/conf.d/SuSEconfig.xpdf|\
+	/sbin/conf.d/SuSEconfig.zmessages)
+		# accept legacy
+	;;
+	/sbin/conf.d/*)
+	  echo `package_name $RPM`: \""$LINE"\" is not a known SuSEconfig script
+	  echo "Adding new SuSEconfig scripts is not accepted for openSUSE 10.2 and newer"
+	  UNVALID_FILE_FOUND=true
+	;;
+	# allowed, but not nice to have:
+	/afs|\
+	/afs/*|\
+	/emul|\
+	/emul/*|\
+	/srv|\
+	/srv/*|\
+	/home/tet|\
+	/home/tet/*|\
+	/usr/openwin|\
+	/usr/openwin/*|\
+	/shlib|\
+	/shlib/*|\
+	/usr/NX/*|\
+	/usr/shlib|\
+	/usr/shlib/*|\
+	/usr/i486-sysv4|\
+	/usr/i486-sysv4/*)
+	;;
+        # allowed for autobuild:
+	/CD*|\
+	/SuSE*|\
+	/suse*|\
+	/docu|\
+	/docu/*)
+	;;
+	# allowed by FHS 2.2
+	/bin|\
+	/bin/*|\
+	/boot|\
+	/boot/*|\
+	/cdrom|\
+        /dev|\
+	/dev/*|\
+        /etc|\
+	/etc/*|\
+	/floppy|\
+	/home|\
+	/lib|\
+	/lib/*|\
+	/lib64|\
+	/lib64/*|\
+        /media|\
+	/media/*|\
+        /mnt|\
+	/opt|\
+	/opt/IBM|\
+	/opt/IBM/*|\
+	/opt/SuSE|\
+	/opt/SuSE/*|\
+	/opt/MainActor_V5|\
+	/opt/MainActor_V5/*|\
+	/opt/cross|\
+	/opt/cross/*|\
+	/opt/dietlibc|\
+	/opt/dietlibc/*|\
+	/opt/dosemu|\
+	/opt/dosemu/*|\
+	/opt/dx|\
+	/opt/dx/*|\
+	/opt/eclipse|\
+	/opt/eclipse/*|\
+	/opt/gcc-*|\
+	/opt/icecream|\
+	/opt/icecream/*|\
+	/opt/intel|\
+	/opt/intel/*|\
+	/opt/ibm|\
+	/opt/ibm/*|\
+	/opt/ibmcmp|\
+	/opt/ibmcmp/*|\
+	/opt/kde3|\
+	/opt/kde3/*|\
+	/opt/ltp|\
+	/opt/ltp/*|\
+	/opt/lsb|\
+	/opt/lsb/*|\
+	/opt/lsb-tet3-lite|\
+	/opt/lsb-tet3-lite/*|\
+	/opt/moneyplex|\
+	/opt/moneyplex/*|\
+	/opt/mozilla|\
+	/opt/mozilla/*|\
+	/opt/mpich|\
+	/opt/mpich/*|\
+	/opt/oracle|\
+	/opt/oracle/*|\
+	/opt/otrs|\
+	/opt/otrs/*|\
+	/opt/pbs|\
+	/opt/pbs/*|\
+	/opt/planmaker|\
+	/opt/planmaker/*|\
+	/opt/rtsynth|\
+	/opt/rtsynth/*|\
+	/opt/sesam|\
+	/opt/sesam/*|\
+	/opt/snavigator|\
+	/opt/snavigator/*|\
+	/opt/stress|\
+	/opt/stress/*|\
+	/opt/tahi|\
+	/opt/tahi/*|\
+	/opt/tcm|\
+	/opt/tcm/*|\
+	/opt/testing|\
+	/opt/testing/*|\
+	/opt/textmaker|\
+	/opt/textmaker/*|\
+	/opt/tuxbase|\
+	/opt/tuxbase/*|\
+	/opt/vocal|\
+	/opt/vocal/*|\
+	/opt/xpf|\
+	/opt/xpf/*|\
+	/opt/zope|\
+	/opt/zope/*|\
+	/proc|\
+	/root|\
+	/root/.exrc|\
+	/root/.gnupg|\
+	/root/.gnupg/*|\
+	/root/.kbackrc|\
+	/root/.xinitrc|\
+	/root/bin|\
+	/sbin|\
+	/sbin/*|\
+	/subdomain|\
+	/sys|\
+	/tmp|\
+	/tmp/.X11-unix|\
+	/tmp/.ICE-unix|\
+	/usr|\
+	/usr/*-linux-libc5|\
+	/usr/*-linux-libc5/*|\
+	/usr/*-linux|\
+	/usr/*-linux/*|\
+	/usr/X11|\
+	/usr/X11R6|\
+	/usr/X11R6/*|\
+	/usr/bin|\
+	/usr/bin/*|\
+	/usr/games|\
+	/usr/games/*|\
+	/usr/include|\
+	/usr/include/*|\
+	/usr/lib|\
+	/usr/lib/*|\
+	/usr/lib64|\
+	/usr/lib64/*|\
+	/usr/local|\
+	/usr/local/bin|\
+	/usr/local/games|\
+	/usr/local/include|\
+	/usr/local/lib|\
+	/usr/local/lib64|\
+	/usr/local/man|\
+	/usr/local/man/*|\
+	/usr/local/sbin|\
+	/usr/local/share|\
+	/usr/local/src|\
+	/usr/sbin|\
+	/usr/sbin/*|\
+	/usr/share|\
+	/usr/share/*|\
+	/usr/spool|\
+	/usr/src|\
+	/usr/src/debug*|\
+	/usr/src/linux*|\
+	/usr/src/kernel-modules*|\
+	/usr/src/packages|\
+	/usr/src/packages/*|\
+	/usr/src/bxform*|\
+	/usr/src/dicts|\
+	/usr/src/dicts/*|\
+	/usr/tmp|\
+	/var|\
+	/var/X11R6|\
+	/var/X11R6/*|\
+	/var/account|\
+	/var/account/*|\
+	/var/agentx|\
+	/var/agentx/*|\
+	/var/cache|\
+	/var/cache/*|\
+	/var/games|\
+	/var/games/*|\
+	/var/lib|\
+	/var/lib/*|\
+	/var/local|\
+	/var/lock|\
+	/var/lock/*|\
+	/var/log|\
+	/var/log/*|\
+	/var/mail|\
+	/var/mail/*|\
+	/var/opt|\
+	/var/opt/*|\
+	/var/preserve|\
+	/var/run|\
+	/var/run/*|\
+	/var/spool|\
+	/var/spool/*|\
+	/var/tmp|\
+	/var/tmp/vi.recover|\
+	/var/yp|\
+	/var/yp/*)
+        ;;
+	# we have them below /var, but not nice to have:
+	/var/adm|\
+	/var/adm/*|\
+	/var/db|\
+	/var/db/*|\
+	/var/nis|\
+	/var/nis/*|\
+	/var/heimdal)
+	;;
+	*)
+          echo `package_name $RPM`: \""$LINE"\" is not allowed anymore in FHS 2.2.
+          UNVALID_FILE_FOUND=true
+        ;;
+      esac
+      if [ "$RPM_ARCH" = "noarch" ] ; then
+	case "$LINE" in
+	    /lib64|\
+	    /lib64/*|\
+	    /usr/lib64|\
+	    /usr/lib64/*|\
+	    /usr/X11R6/lib64|\
+	    /usr/X11R6/lib64/*|\
+	    /opt/gnome/lib64|\
+	    /opt/gnome/lib64/*|\
+	    /opt/kde3/lib64|\
+	    /opt/kde3/lib64/*|\
+	    /usr/lib/pkgconfig/*)
+		echo `package_name $RPM`: \""$LINE"\" is not allowed in a noarch package.
+		UNVALID_FILE_FOUND=true
+		;;
+	esac
+      fi
+    done
+#
+# Second part: check, if the directory is already part of filesystem
+#
+    if [ `package_name $RPM` != "filesystem" ]; then
+      rpm -qlvp $RPM | sed -ne "/^d/s@.* @@p" | sort -u > $BUILD_ROOT/.dirlist2
+      cat $BUILD_ROOT/.dirlist1 $BUILD_ROOT/.dirlist2 | sort | uniq -d > $BUILD_ROOT/.dirlist_diff
+      if [ -s $BUILD_ROOT/.dirlist_diff ] ; then
+  	  echo "The following directories from `basename $RPM`"
+	  echo "are already part of the filesystem RPM:"
+          cat $BUILD_ROOT/.dirlist_diff
+          UNVALID_FILE_FOUND=true
+      fi
+      rm -f $BUILD_ROOT/.dirlist2 $BUILD_ROOT/.dirlist_diff
+    fi
+#
+# Third part: check, if all directories are owned by a package
+#
+    rpm -qlp $RPM | chroot $BUILD_ROOT /.checkdirs "${RPM##*/}"
+    if [ $? != 0 ] ; then
+	UNVALID_FILE_FOUND=true
+    fi
+#
+# Fourth part: check for non-exec directories
+#
+    rpm -qplv $RPM | grep "^d..-" > $BUILD_ROOT/.dirlist3
+    if [ -s $BUILD_ROOT/.dirlist3 ] ; then
+	echo "The following directories are not even executable by their owner:"
+	cat $BUILD_ROOT/.dirlist3
+	UNVALID_FILE_FOUND=true
+    fi
+
+# end loop
+
+  done
+  rm -f $BUILD_ROOT/.dirlist1
+fi
+
+test $UNVALID_FILE_FOUND = true && exit 1
+
+exit 0

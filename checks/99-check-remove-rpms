@@ -1,0 +1,59 @@
+#!/bin/bash
+
+function reorder {
+    test -z "$*" && return
+    rm -rf $BUILD_ROOT/.reorder
+    mkdir -p $BUILD_ROOT/.reorder
+    for RPM in "$@" ; do
+        PKG=${RPM##*/}
+        PKG=${PKG%-*-*.*.rpm}
+        PKG=${PKG%.rpm}
+        echo "$RPM" > $BUILD_ROOT/.reorder/$PKG
+        REORDER_HAVE="$REORDER_HAVE ${RPM#$BUILD_ROOT}"
+    done
+    if test -x $BUILD_ROOT/usr/lib/rpm/rpmi ; then
+        chroot $BUILD_ROOT bash -c "cd ${RPMCACHEDIR#$BUILD_ROOT} && rpm -Uvv --nosuggest --nodigest --nosignature --force --nodeps --test $REORDER_HAVE" 2>&1 | sed -n -e 's/-[^- ]*-[^- ]* / /' -e 's/^D:   install: \([^ ]*\) .*/\1/p' > $BUILD_ROOT/.reorder/.list
+    else
+        chroot $BUILD_ROOT bash -c "cd ${RPMCACHEDIR#$BUILD_ROOT} && rpm -Uvv --force --nodeps --test $REORDER_HAVE" 2>&1 | sed -n -e 's/-[^- ]*-[^- ]* / /' -e 's/^D: package: \([^ ]*\) .*/\1/p' > $BUILD_ROOT/.reorder/.list
+    fi
+    REORDER_HAVE=
+    for PKG in `cat $BUILD_ROOT/.reorder/.list`; do
+        test -e $BUILD_ROOT/.reorder/$PKG || continue
+        REORDER_HAVE="$REORDER_HAVE `cat $BUILD_ROOT/.reorder/$PKG`"
+        rm $BUILD_ROOT/.reorder/$PKG
+    done
+    for RPM in "$@" ; do
+        PKG=${RPM##*/}
+        PKG=${PKG%-*-*.*.rpm}
+        PKG=${PKG%.rpm}
+        test -e $BUILD_ROOT/.reorder/$PKG || continue
+        REORDER_HAVE="$REORDER_HAVE $RPM"
+        REORDER_MISSED="$REORDER_MISSED $PKG"
+        rm $BUILD_ROOT/.reorder/$PKG
+    done
+    echo $REORDER_HAVE
+} 
+
+
+# test package removal
+echo "... removing all built rpms"
+RPM_ERASE_LIST=
+RPM_FILE_LIST=(`find $BUILD_ROOT/usr/src/packages/RPMS -type f -name "*.rpm"`)
+
+for RPM in `reorder "${RPM_FILE_LIST[@]}"`; do
+    PKG=${RPM##*/}
+    PKG=${PKG%-*-*.*.rpm}
+    PKG=${PKG%.rpm}
+    test -e "$BUILD_ROOT/installed-pkg/$PKG" && continue
+    RPM_ERASE_LIST="$RPM_ERASE_LIST $PKG"
+done
+test -z "$REORDER_MISSED" || echo "    (reorder missed ${REORDER_MISSED% })"
+if test -n "$RPM_ERASE_LIST" ; then
+    echo "    (order: reverse$RPM_ERASE_LIST)"
+    chroot $BUILD_ROOT rpm --noorder ${ADDITIONAL_PARAMS% --ignorearch} --nodeps -e $RPM_ERASE_LIST || {
+	echo 'failed to remove rpms, aborting build'
+	touch $BUILD_IS_RUNNING
+	cleanup_and_exit 1
+    }
+fi
+
