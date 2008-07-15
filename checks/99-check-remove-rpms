@@ -34,9 +34,12 @@ function reorder {
     echo $REORDER_HAVE
 } 
 
+#make sure it is mounted
+test -d $BUILD_ROOT/proc/sys || mount -n -tproc none $BUILD_ROOT/proc
 
 # test package removal
 echo "... removing all built rpms"
+export YAST_IS_RUNNING="instsys"
 RPM_ERASE_LIST=
 RPM_FILE_LIST=(`find $BUILD_ROOT/usr/src/packages/RPMS -type f -name "*.rpm"`)
 
@@ -53,7 +56,8 @@ if test -n "$RPM_ERASE_LIST" ; then
     chroot $BUILD_ROOT rpm --noorder ${ADDITIONAL_PARAMS% --ignorearch} --nodeps -e $RPM_ERASE_LIST || {
 	echo 'failed to remove rpms, aborting build'
 	touch $BUILD_IS_RUNNING
-	cleanup_and_exit 1
+	exit 1
     }
 fi
+
 
