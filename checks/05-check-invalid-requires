@@ -24,6 +24,17 @@ for LINE in $FORBIDDEN_REQ; do
         esac
 done
 
+RPMLIST=`find $BUILD_ROOT/usr/src/packages/RPMS -name "*.rpm"`
+for pack in $RPMLIST ; do
+	case $pack in
+		*-debuginfo-*|*-debugsource-*)
+			N=`rpm -qp --qf "%{NAME}" $pack`
+			echo "dependency check for "`basename $pack`":"
+			chroot $BUILD_ROOT rpm -V --nofiles $N || UNVALID_FILE_FOUND=true
+			;;
+		*) ;;
+	esac
+done
 test $UNVALID_FILE_FOUND = true && exit 1
 
 exit 0
