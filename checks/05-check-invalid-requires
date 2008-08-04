@@ -30,7 +30,13 @@ for pack in $RPMLIST ; do
 		*-debuginfo-*|*-debugsource-*)
 			N=`rpm -qp --qf "%{NAME}" $pack`
 			echo "dependency check for "`basename $pack`":"
-			chroot $BUILD_ROOT rpm -V --nofiles $N || UNVALID_FILE_FOUND=true
+			for i in `chroot $BUILD_ROOT rpm -qp --qf "[%{REQUIRENAME}\n]" ${pack##$BUILD_ROOT}` ; do
+			    case $i in
+				rpmlib*|*-debuginfo|*-debugsource) ;;
+				*) chroot $BUILD_ROOT rpm -q --whatprovides $i || UNVALID_FILE_FOUND=true
+				   ;;
+			    esac
+			done
 			;;
 		*) ;;
 	esac
