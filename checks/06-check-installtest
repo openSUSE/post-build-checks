@@ -34,7 +34,7 @@ for i in `find $BUILD_ROOT/usr/src/packages/RPMS -name "*.rpm" | sort` ; do
 	chroot $BUILD_ROOT sh $SCRIPT_ARG /.build_patchrpmcheck_scr 2 || {
 	    echo "preinstall script of ${i##*/} failed"
 	    umount_all
-	    touch $BUILD_IS_RUNNING
+	    touch $BUILD_ROOT/not-ready
 	    exit 1
 	}
     fi
@@ -43,7 +43,7 @@ for i in `find $BUILD_ROOT/usr/src/packages/RPMS -name "*.rpm" | sort` ; do
 	chroot $BUILD_ROOT sh $SCRIPT_ARG /.build_patchrpmcheck_scr 2 || {
 	    echo "postinstall script of ${i##*/} failed"
 	    umount_all
-	    touch $BUILD_IS_RUNNING
+	    touch $BUILD_ROOT/not-ready
 	    exit 1
 	}
     fi
@@ -52,7 +52,7 @@ for i in `find $BUILD_ROOT/usr/src/packages/RPMS -name "*.rpm" | sort` ; do
 	chroot $BUILD_ROOT sh $SCRIPT_ARG /.build_patchrpmcheck_scr 1 || {
 	    echo "preuninstall script of ${i##*/} failed"
 	    umount_all
-	    touch $BUILD_IS_RUNNING
+	    touch $BUILD_ROOT/not-ready
 	    exit 1
 	}
     fi
@@ -61,7 +61,7 @@ for i in `find $BUILD_ROOT/usr/src/packages/RPMS -name "*.rpm" | sort` ; do
 	chroot $BUILD_ROOT sh $SCRIPT_ARG /.build_patchrpmcheck_scr 1 || {
 	    echo "postuninstall script of ${i##*/} failed"
 	    umount_all
-	    touch $BUILD_IS_RUNNING
+	    touch $BUILD_ROOT/not-ready
 	    exit 1
 	}
     fi
@@ -71,7 +71,7 @@ for i in `find $BUILD_ROOT/usr/src/packages/RPMS -name "*.rpm" | sort` ; do
 	echo "pre/postinstall/uninstall script of ${i##*/} modifies filelist!"
 	echo "filelist diff:"
 	diff -u $BUILD_ROOT/.build_patchrpmcheck1 $BUILD_ROOT/.build_patchrpmcheck2 | grep -v '^ '
-	touch $BUILD_IS_RUNNING
+	touch $BUILD_ROOT/not-ready
 	exit 1
     fi
     rm -f $BUILD_ROOT/.build_patchrpmcheck1 $BUILD_ROOT/.build_patchrpmcheck2 $BUILD_ROOT/.build_patchrpmcheck_scr

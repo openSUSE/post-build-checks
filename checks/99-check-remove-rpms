@@ -55,7 +55,7 @@ if test -n "$RPM_ERASE_LIST" ; then
     echo "    (order: reverse$RPM_ERASE_LIST)"
     chroot $BUILD_ROOT rpm --noorder ${ADDITIONAL_PARAMS% --ignorearch} --nodeps -e $RPM_ERASE_LIST || {
 	echo 'failed to remove rpms, aborting build'
-	touch $BUILD_IS_RUNNING
+	touch $BUILD_ROOT/not-ready
 	exit 1
     }
 fi

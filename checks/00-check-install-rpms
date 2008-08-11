@@ -7,7 +7,7 @@ ADDITIONAL_PARAMS=
 test "$ABUILD_INIT_WITH_IGNORE_ARCH" = true && ADDITIONAL_PARAMS="$ADDITIONAL_PARAMS --ignorearch"
 chroot $BUILD_ROOT rpm $ADDITIONAL_PARAMS --force --nodeps -Uv ${RPM_FILE_LIST[*]#$BUILD_ROOT} || {
     echo 'failed to install rpms, aborting build'
-    test -n "$BUILD_IS_RUNNING" && touch $BUILD_IS_RUNNING
+    test -n "$BUILD_ROOT" && touch $BUILD_ROOT/not-ready
     exit 1
 }
 

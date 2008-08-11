@@ -35,7 +35,7 @@ for i in `find $BUILD_ROOT/usr/src/packages/RPMS -name "*.rpm" | sort` ; do
 done
 
 if test "$HAD_ERRORS" = 1 ; then
-	touch $BUILD_IS_RUNNING
+	touch $BUILD_ROOT/not-ready
 	exit 1
 fi
 exit 0
