@@ -3,8 +3,6 @@
 echo "... testing for modified permissions"
 
 SCRIPT_ARG=-e
-test $BUILD_BASENAME = 8.0-i386 && SCRIPT_ARG=
-test $BUILD_BASENAME = 8.0-i386+kde && SCRIPT_ARG=
 HAD_ERRORS=0
 
 for i in `find $BUILD_ROOT/usr/src/packages/RPMS -name "*.rpm" | sort` ; do

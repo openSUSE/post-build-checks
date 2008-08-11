@@ -13,6 +13,7 @@ ALL_RPMS=`find $BUILD_ROOT/usr/src/packages/RPMS -name "*.rpm"`
 if [ ! -z "$ALL_RPMS" ] ; then
 
   for RPM in $ALL_RPMS; do
+    RPM_NAME=`rpm -qp --qf "%{NAME}" $RPM`
     ALL_RPM_LINES=`rpm -qpl $RPM | sed -e "s@ @_@g"`
     for LINE in $ALL_RPM_LINES; do
       case "$LINE" in
@@ -25,7 +26,7 @@ if [ ! -z "$ALL_RPMS" ] ; then
             *)
               grep ^"$SCRIPTNAME " $INITD_DATA > /dev/null
               if [ $? -eq 1 ]; then
-                 echo `package_name $RPM`: Name of init script \""$SCRIPTNAME"\" is not LSB conform
+                 echo $RPM_NAME: Name of init script \""$SCRIPTNAME"\" is not LSB conform
                  #INVALID_FILE_FOUND=true
               fi
 	      ;;
@@ -45,7 +46,7 @@ if [ ! -z "$ALL_RPMS" ] ; then
 	    *)
               grep ^"$SCRIPTNAME\$" $CRON_DATA > /dev/null
               if [ $? -eq 1 ]; then
-                 echo `package_name $RPM`: Name of cron script \""$SCRIPTNAME"\" is not LSB conform
+                 echo $RPM_NAME: Name of cron script \""$SCRIPTNAME"\" is not LSB conform
                  #INVALID_FILE_FOUND=true
               fi
             ;;

@@ -11,36 +11,17 @@ if [ ! -z "$ALL_RPMS" ] ; then
   chroot $BUILD_ROOT rpm -qlv filesystem | sed -ne "/^d/s@.* @@p" | sort > $BUILD_ROOT/.dirlist1
   cp -p $BUILD_ROOT/usr/lib/build/checks-data/checkdirs $BUILD_ROOT/.checkdirs
   for RPM in $ALL_RPMS; do
+    RPM_NAME=`rpm -qp --qf "%{NAME}" $RPM`
     RPM_ARCH=`rpm -qp --qf "%{ARCH}" $RPM`
     ALL_RPM_LINES=`rpm -qpl $RPM | sed -e "s@ @_@g"`
     for LINE in $ALL_RPM_LINES; do
       case "$LINE" in
 	*contains_no_files*)
-	  PRPM=`package_name $RPM`
-	  case $PRPM in
-            sapdb|\
-	    core-release)
-            ;;
-            *)
-	      echo $RPM: An empty RPM is not allowed anymore in SuSE Linux
-              UNVALID_FILE_FOUND=true
-            ;;
-          esac
+	  echo $RPM_NAME: An empty RPM is not allowed anymore in SuSE Linux
+          UNVALID_FILE_FOUND=true
 	;;
-        /usr/dict)
-          PRPM=`package_name $RPM`
-          case $PRPM in
-            eazy)
-            ;;
-            *)
-              echo `package_name $RPM`: \""$LINE"\" is not allowed anymore in FHS 2.2.
-	      UNVALID_FILE_FOUND=true
-            ;;
-          esac
-        ;;
 	/opt/novell|/opt/novell/*)
-          PRPM=`package_name $RPM`
-          case $PRPM in
+          case $RPM_NAME in
             CASA*|gnome*|*openwbem*)
             echo "This package is not allowed to store files in /opt/novell. Please contact autobuild@suse.de if you disagree".
                           UNVALID_FILE_FOUND=true
@@ -49,18 +30,9 @@ if [ ! -z "$ALL_RPMS" ] ; then
             ;;
           esac
         ;;
-        /var/locale|/var/locale/*)
-          PRPM=`package_name $RPM`
-          case $PRPM in
-            atokx)
-            ;;
-            *)
-              echo `package_name $RPM`: \""$LINE"\" is not allowed anymore in FHS 2.2.
-	      UNVALID_FILE_FOUND=true
-            ;;
-          esac
-        ;;
         # This one are explicit forbidden
+        /usr/dict|\
+        /var/locale|/var/locale/*|\
 	/etc/X11/app-defaults/*|\
 	/usr/local/man/*/*|\
 	/var/lib/games|\
@@ -69,12 +41,12 @@ if [ ! -z "$ALL_RPMS" ] ; then
 	/sbin/init.d|\
 	/sbin/init.d/*|\
         /bin/*/*)
-          echo `package_name $RPM`: \""$LINE"\" is not allowed anymore in FHS 2.2.
+          echo $RPM_NAME: \""$LINE"\" is not allowed anymore in FHS 2.2.
           UNVALID_FILE_FOUND=true
         ;;
 	/usr/local/ftp*|\
 	/usr/local/http*)
-          echo `package_name $RPM`: \""$LINE"\" is not allowed anymore on SL 8.1.
+          echo $RPM_NAME: \""$LINE"\" is not allowed anymore on SL 8.1.
 	  echo "Please use /srv for ftp and www data"
           UNVALID_FILE_FOUND=true
         ;;
@@ -83,14 +55,14 @@ if [ ! -z "$ALL_RPMS" ] ; then
 	/usr/lib/YaST2/*.ycp|\
 	/usr/lib/YaST2/*.y2cc|\
 	/usr/lib/YaST2/*.*.scr)
-          echo `package_name $RPM`: \""$LINE"\" is not allowed anymore in YaST2
+          echo $RPM_NAME: \""$LINE"\" is not allowed anymore in YaST2
           UNVALID_FILE_FOUND=true
         ;;
         # /usr/games
         /usr/games/bin|\
         /usr/games/lib|\
         /usr/games/*/*)
-          echo `package_name $RPM`: \""$LINE"\" is not allowed anymore in FHS 2.2.
+          echo $RPM_NAME: \""$LINE"\" is not allowed anymore in FHS 2.2.
           echo static data has to be in /usr/share/games, variable in /var/games
           UNVALID_FILE_FOUND=true
         ;;
@@ -110,50 +82,45 @@ if [ ! -z "$ALL_RPMS" ] ; then
 	/etc/sysconfig/uml)
 	;;
 	/usr/share/info/dir)
-	  PRPM=`package_name $RPM`
-	  case $PRPM in
+	  case $RPM_NAME in
             info)
             ;;
             *)
-              echo $PRPM: \""$LINE"\" is not allowed anymore in SuSE Linux.
+              echo $RPM_NAME: \""$LINE"\" is not allowed anymore in SuSE Linux.
               UNVALID_FILE_FOUND=true
             ;;
           esac
 	;;
 	/opt/gnome*)
-          PRPM=`package_name $RPM`
-          case $PRPM in
+          case $RPM_NAME in
             opt_gnome-compat*)
             ;;
             *)
-              echo $PRPM: \""$LINE"\" is not allowed anymore in SuSE Linux.
+              echo $RPM_NAME: \""$LINE"\" is not allowed anymore in SuSE Linux.
               UNVALID_FILE_FOUND=true
             ;;
           esac
         ;;
 	# perl 5.8.1
 	/usr/lib/perl5/site_perl/*)
-          PRPM=`package_name $RPM`
-	  test "$PRPM" != perl && {
-	    echo $PRPM: site_perl is not allowed anymore in SuSE Linux.
+	  test "$RPM_NAME" != perl && {
+	    echo $RPM_NAME: site_perl is not allowed anymore in SuSE Linux.
 	    UNVALID_FILE_FOUND=true
 	  }
         ;;
 	/usr/lib/perl5/vendor_perl/5.*/auto|\
 	/usr/lib/perl5/vendor_perl/5.*/*-linux-*/auto)
-          PRPM=`package_name $RPM`
-	  test "$PRPM" != perl && {
-	    echo $PRPM: auto directory is included in the perl package
+	  test "$RPM_NAME" != perl && {
+	    echo $RPM_NAME: auto directory is included in the perl package
 	    UNVALID_FILE_FOUND=true
 	  }
         ;;
 	/usr/lib/debug/*)
-          PRPM=`package_name $RPM`
-	  case $PRPM in
+	  case $RPM_NAME in
 	    *-debug|*-debuginfo|*-debugsource)
 		;;
 	    *)
-		echo "$PRPM: \"$LINE\" may only be packaged in the -debuginfo subpackage"
+		echo "$RPM_NAME: \"$LINE\" may only be packaged in the -debuginfo subpackage"
 		UNVALID_FILE_FOUND=true
 		;;
 	  esac
@@ -171,9 +138,8 @@ if [ ! -z "$ALL_RPMS" ] ; then
 	/usr/lib/rpm/gnupg/pubring.gpg~)
 	;;
 	*~)
-          PRPM=`package_name $RPM`
-	  test "$PRPM" != pd && {
-	    echo $PRPM: \""$LINE"\" is not allowed anymore in SuSE Linux.
+	  test "$RPM_NAME" != pd && {
+	    echo $RPM_NAME: \""$LINE"\" is not allowed anymore in SuSE Linux.
 	    UNVALID_FILE_FOUND=true
 	  }
         ;;
@@ -191,14 +157,14 @@ if [ ! -z "$ALL_RPMS" ] ; then
 	/usr/share/locale/LC_MESSAGES|\
 	/usr/X11R6/lib/locale|\
 	/usr/X11R6/lib/X11/locale/LC_MESSAGES*)
-	  echo `package_name $RPM`: \""$LINE"\" is not allowed anymore in SuSE Linux.
+	  echo $RPM_NAME: \""$LINE"\" is not allowed anymore in SuSE Linux.
 	  UNVALID_FILE_FOUND=true
 	;;
 	# whitelist for now
 	/lib/klibc*|/lib64/klibc*|/lib/lilo*)
 	;;
 	/lib/*.la|/lib/*.a|/lib64/*.la|/lib64/lib*.a)
-	  echo `package_name $RPM`: \""$LINE"\" is not allowed anymore in SuSE Linux.
+	  echo $RPM_NAME: \""$LINE"\" is not allowed anymore in SuSE Linux.
 	  echo "please move la files, static libs and .so symlinks out of /"
 	  UNVALID_FILE_FOUND=true
 	;;
@@ -211,7 +177,7 @@ if [ ! -z "$ALL_RPMS" ] ; then
 	/usr/share/locale/no/*|\
 	/usr/share/vim/vim63/lang/no|\
 	/usr/share/vim/vim63/lang/no/*)
-	  echo `package_name $RPM`: \""$LINE"\" is not allowed anymore in SuSE Linux.
+	  echo $RPM_NAME: \""$LINE"\" is not allowed anymore in SuSE Linux.
 	  echo "Please use nb or nb_NO (and nn for nynorsk)"
 	  echo "see https://bugzilla.novell.com/show_bug.cgi?id=42748"
 	  UNVALID_FILE_FOUND=true
@@ -228,7 +194,7 @@ if [ ! -z "$ALL_RPMS" ] ; then
 	/usr/X11R6/lib/X11/app-defaults/*|\
 	/usr/X11R6/lib64/X11/app-defaults|\
 	/usr/X11R6/lib64/X11/app-defaults/*)
-	  echo `package_name $RPM`: \""$LINE"\" is not allowed anymore in SuSE Linux.
+	  echo $RPM_NAME: \""$LINE"\" is not allowed anymore in SuSE Linux.
 	  echo "Please use the updated paths for Xorg 7.1 and above"
 	  UNVALID_FILE_FOUND=true
 	;;
@@ -277,7 +243,7 @@ if [ ! -z "$ALL_RPMS" ] ; then
 		# accept legacy
 	;;
 	/sbin/conf.d/*)
-	  echo `package_name $RPM`: \""$LINE"\" is not a known SuSEconfig script
+	  echo $RPM_NAME: \""$LINE"\" is not a known SuSEconfig script
 	  echo "Adding new SuSEconfig scripts is not accepted for openSUSE 10.2 and newer"
 	  UNVALID_FILE_FOUND=true
 	;;
@@ -499,7 +465,7 @@ if [ ! -z "$ALL_RPMS" ] ; then
 	/var/heimdal)
 	;;
 	*)
-          echo `package_name $RPM`: \""$LINE"\" is not allowed anymore in FHS 2.2.
+          echo $RPM_NAME: \""$LINE"\" is not allowed anymore in FHS 2.2.
           UNVALID_FILE_FOUND=true
         ;;
       esac
@@ -516,7 +482,7 @@ if [ ! -z "$ALL_RPMS" ] ; then
 	    /opt/kde3/lib64|\
 	    /opt/kde3/lib64/*|\
 	    /usr/lib/pkgconfig/*)
-		echo `package_name $RPM`: \""$LINE"\" is not allowed in a noarch package.
+		echo $RPM_NAME: \""$LINE"\" is not allowed in a noarch package.
 		UNVALID_FILE_FOUND=true
 		;;
 	esac
@@ -525,7 +491,7 @@ if [ ! -z "$ALL_RPMS" ] ; then
 #
 # Second part: check, if the directory is already part of filesystem
 #
-    if [ `package_name $RPM` != "filesystem" ]; then
+    if [ $RPM_NAME != "filesystem" ]; then
       rpm -qlvp $RPM | sed -ne "/^d/s@.* @@p" | sort -u > $BUILD_ROOT/.dirlist2
       cat $BUILD_ROOT/.dirlist1 $BUILD_ROOT/.dirlist2 | sort | uniq -d > $BUILD_ROOT/.dirlist_diff
       if [ -s $BUILD_ROOT/.dirlist_diff ] ; then

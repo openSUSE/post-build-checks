@@ -12,14 +12,8 @@ for LINE in $FORBIDDEN_REQ; do
           /usr/local/httpd/cgi-bin*)
             ;;
           *)
-            case $BUILD_BASENAME in
-              5*|6*|7*)
-              ;;
-              *)
-                echo \""$LINE"\" is not allowed as Requires.
-                UNVALID_FILE_FOUND=true
-              ;;
-            esac
+            echo \""$LINE"\" is not allowed as Requires.
+            UNVALID_FILE_FOUND=true
           ;;
         esac
 done

@@ -14,9 +14,6 @@ function umount_all () {
 }
 
 SCRIPT_ARG=-e
-test $BUILD_BASENAME = 8.0-i386 && SCRIPT_ARG=
-test $BUILD_BASENAME = 8.0-i386+kde && SCRIPT_ARG=
-test $BUILD_BASENAME = sles9-i386 -a "$PNAME" = NDSserv && SCRIPT_ARG=
 
 export YAST_IS_RUNNING="instsys"
 for i in `find $BUILD_ROOT/usr/src/packages/RPMS -name "*.rpm" | sort` ; do
