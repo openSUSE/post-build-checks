@@ -2,7 +2,7 @@
 # Check for dangerous compiler warnings
 #
 
-test "$AUTOBUILD" = "true" || LOGFILE=$BUILD_ROOT/.build.log
+test -z "$LOGFILE" && LOGFILE=$BUILD_ROOT/.build.log
 
 case $PNAME in
     kernel-*) exit 0 ;;
@@ -12,6 +12,7 @@ if [ -f $LOGFILE ]; then
 
   echo "... testing for serious compiler warnings"
   echo "    (using /usr/lib/build/checks-data/check_gcc_output)"
+  echo "    (using $LOGFILE)"
 
   $BUILD_ROOT/usr/lib/build/checks-data/check_gcc_output $LOGFILE
   if [ $? -ne 0 ]; then
