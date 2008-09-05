@@ -48,6 +48,13 @@ for RPM in `reorder "${RPM_FILE_LIST[@]}"`; do
     PKG=${PKG%-*-*.*.rpm}
     PKG=${PKG%.rpm}
     test -e "$BUILD_ROOT/installed-pkg/$PKG" && continue
+    PKG1=${PKG%[0-9]}[0-9]
+    test -e $BUILD_ROOT/installed-pkg/$PKG1 && {
+        N=`ls $BUILD_ROOT/installed-pkg/$PKG1`
+	N=`basename $N`
+	echo "(keeping $PKG because of $N)"
+	continue
+    }
     RPM_ERASE_LIST="$RPM_ERASE_LIST $PKG"
 done
 test -z "$REORDER_MISSED" || echo "    (reorder missed ${REORDER_MISSED% })"
