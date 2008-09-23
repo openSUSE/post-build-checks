@@ -31,7 +31,6 @@ my %warn_checks = (
     "warning:.*implicit .*\b(recv|recvfrom|read|pread|pread64|readlink|getwd|getcwd|fgets|fgets_unlock|strncat|strcat|memmove|memcpy|mempcpy|strpcpy|strcpy|strncpy|printf|sprintf|snprintf|vprintf|vsprintf|vsnprintf|fprintf|vfprintf|gets|memset|bzero|bcopy|strlen|strcmp|wcscpy|wcpcpy|wcsncpy|wcpncpy|wcscat|swprintf|vswprintf|fgetws|wcsrtombs|mbsrtowcs|wcrtomb|wcsnrtombs|ptsname|realpath|wctomb|mbstowcs|ttyname_r|getlogin_r|getgroups|confstr|gethostname|getdomainname|)\b" => "implicit-fortify-decl",
     'warning:.*memset used with constant zero length parameter' => "memset-with-zero-length",
     'warning:.*comparison with string literal' => "stringcompare",
-    'warning: the address of .* will always evaluate as' => "uses-function-address"
 );
 
 my %warn_desc = (
@@ -64,7 +63,6 @@ my %warn_desc = (
                    "  - Implicit *read* functions need #include <unistd.h>.\n" .
                    "  - Implicit *recv* functions need #include <sys/socket.h>.\n",
      "no-rpm-opt-flags" => "File is compiled without RPM_OPT_FLAGS",
-     "uses-function-address" => "File uses address of function, '()' missing?"
 );
 
 my %warn_severity = (
@@ -84,7 +82,6 @@ my %warn_severity = (
     "bufferoverflowstrncat" => 'E',
     "stringcompare" => 'E',
     "uninitialized-variable" => 'W',
-    "uses-function-address" => 'D'
 );
 
 #----------------------------------------------------------------------
