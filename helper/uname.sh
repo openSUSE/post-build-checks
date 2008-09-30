@@ -7,23 +7,7 @@ if test -f /.kernelversion ; then
 fi
 
 if test -z "$MREL" -a -L /usr/src/linux -a -d /usr/src/linux ; then
-    MREL=`readlink /usr/src/linux`
-    MREL=${MREL#linux}
-    MREL=${MREL#-}
-    uarch=`uname.bin -m`
-    # taken from kernel-source
-    arch=$(echo $uarch \
-           | sed -e s/i.86/i386/  -e s/sun4u/sparc64/ \
-                 -e s/arm.*/arm/  -e s/sa110/arm/ \
-                 -e s/s390x/s390/ -e s/parisc64/parisc/ \
-                 -e s/ppc.*/powerpc/)
-    flavor="$(
-        cd /usr/src/linux-$MREL/arch/$arch
-        set -- defconfig.*
-        [ -e defconfig.default ] && set -- defconfig.default
-        echo ${1/defconfig.}
-    )"
-    test -n "$flavor" && MREL="$MREL-$flavor"
+    MREL=$( shopt -s nullglob; set -- /lib/modules/*-default /lib/modules/* ; basename $1 )
 fi
 
 if test -z "$MREL" -a -f /usr/src/linux/Makefile ; then
