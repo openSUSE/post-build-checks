@@ -26,6 +26,7 @@ my %warn_checks = (
     'warning:.*missing sentinel in function call' => "missing-sentinel",
     'warning:.*call to .* will always overflow destination buffer' => "bufferoverflow",
     'warning:.*call to .*strncat.* might overflow destination buffer' => "bufferoverflowstrncat",
+    'warning:.*called with bigger.*destination buffer' => "destbufferoverflow",
     'warning:.*is used uninitialized in this function' => "uninitialized-variable",
     'warning:.*too few arguments for format' => "missing-arg-for-fmt-string",
     "warning:.*implicit .*\b(recv|recvfrom|read|pread|pread64|readlink|getwd|getcwd|fgets|fgets_unlock|strncat|strcat|memmove|memcpy|mempcpy|strpcpy|strcpy|strncpy|printf|sprintf|snprintf|vprintf|vsprintf|vsnprintf|fprintf|vfprintf|gets|memset|bzero|bcopy|strlen|strcmp|wcscpy|wcpcpy|wcsncpy|wcpncpy|wcscat|swprintf|vswprintf|fgetws|wcsrtombs|mbsrtowcs|wcrtomb|wcsnrtombs|ptsname|realpath|wctomb|mbstowcs|ttyname_r|getlogin_r|getgroups|confstr|gethostname|getdomainname|)\b" => "implicit-fortify-decl",
@@ -45,6 +46,8 @@ my %warn_desc = (
     "bufferoverflowstrncat" => "Statement might be overflowing a buffer in strncat. Common mistake:\n" .
             "BAD: strncat(buffer,charptr,sizeof(buffer)) is wrong, it takes the left over size as 3rd argument\n" .
             "GOOD: strncat(buffer,charptr,sizeof(buffer)-strlen(buffer)-1)\n",
+    "destbufferoverflow" => "Statement might potentially overflow a destination buffer, where a size larger\n" .
+    	" than the actual buffer was specified\n",
     "missing-arg-for-fmt-string" => "Function call is passing too few arguments to a *printf function.\n",
     "uninitialized-variable" => "Program is using uninitialized variables.\nNote the difference between \"is used\" and \"may be used\"",
     "format-security" => "Function call uses possibly exploitable format strings\n",
@@ -71,6 +74,7 @@ my %warn_severity = (
     "no-return-in-nonvoid-function" => 'E',
     "missing-sentinel" => 'E',
     "bufferoverflow" => 'E',
+    "destbufferoverflow" => 'E',
     "memset-with-zero-length" => 'W',
     "missing-arg-for-fmt-string" => 'W',
     "implicit-fortify-decl" => 'W',
