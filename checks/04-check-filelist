@@ -300,8 +300,7 @@ if [ ! -z "$ALL_RPMS" ] ; then
 	/opt/SuSE/*|\
 	/opt/MainActor_V5|\
 	/opt/MainActor_V5/*|\
-	/opt/IBMJava2-142|\
-	/opt/IBMJava2-142/*|\
+	/opt/IBMJava2-*|\
 	/opt/cross|\
 	/opt/cross/*|\
 	/opt/dietlibc|\
