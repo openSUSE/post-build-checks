@@ -134,7 +134,7 @@ sub print_warning($)
     }
 
     foreach my $filename (sort keys %{$warnings{$warntype}}) {
-        print STDERR "$warn_severity{$warntype}: $warn_package $warntype $filename: $warnings{$warntype}{$filename}\n";
+        print STDERR "$warn_severity{$warntype}: $warn_package $warntype $filename:$warnings{$warntype}{$filename}\n";
     }
 }
 
