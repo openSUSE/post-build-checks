@@ -91,7 +91,7 @@ for my $rpm (glob($root."/usr/src/packages/RPMS/*/*")) {
 	$mode &= 07777;
 	if(exists($perms{$file}) || ($type == 04 && exists($perms{$file.'/'}))) {
 	    if($type == 012) {
-		push @warnings, "WARNING: permissions handling for symlink $file is useless\n";
+		push @warnings, "permissions handling for symlink $file is useless\n";
 		next;
 	    }
 	    my ($m, $o);
@@ -99,7 +99,7 @@ for my $rpm (glob($root."/usr/src/packages/RPMS/*/*")) {
 		if(exists($perms{$file})) {
 		    # legacy permissions files may still contain directories
 		    # without slash appended.
-		    push @warnings, "WARNING: $file is a directory, please append a slash to the filename\n";
+		    push @warnings, "$file is a directory, please append a slash to the filename\n";
 		    $m = $perms{$file}{'mode'};
 		    $o = $perms{$file}{'owner'};
 		} else {
@@ -112,30 +112,34 @@ for my $rpm (glob($root."/usr/src/packages/RPMS/*/*")) {
 	    }
 
 	    if ($mode != $m) {
-		push @errors, sprintf("ERROR: \%s has mode \%o but should be \%o\n", $file, $mode, $m);
+		push @errors, sprintf("\%s has mode \%o but should be \%o\n", $file, $mode, $m);
 	    }
 
 	    if ($owner ne $o) {
-		push @errors, "ERROR: $file belongs to $owner but should be $o\n";
+		push @errors, "$file belongs to $owner but should be $o\n";
 	    }
 	} elsif($type != 012) {
 	    if(exists($perms{$file.'/'})) {
-		push @errors, "ERROR: $file is a file but listed as directory\n";
+		push @errors, "$file is a file but listed as directory\n";
 	    }
 
 	    if($mode&06000) {
-		push @errors, sprintf "ERROR: \%s is packaged with setuid/setgid bits (\%o)\n", $file, $mode;
-		$needsecteam = 1;
+		if($type != 04) {
+		    push @errors, sprintf "\%s is packaged with setuid/setgid bits (\%o)\n", $file, $mode;
+		    $needsecteam = 1;
+		} else {
+		    push @warnings, sprintf "\%s is packaged with setuid/setgid bits (\%o)\n", $file, $mode;
+		}
 	    }
 
 	    if($mode&02) {
-		push @errors, sprintf "ERROR: \%s is packaged with world writable permissions (\%o)\n", $file, $mode;
+		push @errors, sprintf "\%s is packaged with world writable permissions (\%o)\n", $file, $mode;
 		$needsecteam = 1;
 	    }
 	}
 
 	if($file =~ /^\/etc\/permissions\.d\// && !exists($permissions_d_whitelist{$file})) {
-	    push @errors, "ERROR: unauthorized permissions file: $file\n";
+	    push @errors, "unauthorized permissions file: $file\n";
 	    $needsecteam = 1;
 	}
     }
@@ -146,15 +150,15 @@ for my $rpm (glob($root."/usr/src/packages/RPMS/*/*")) {
 	print '  '.$rpm.":\n";
     }
     for my $w (@warnings) {
-	print '    '.$w;
+	print '    WARNING: '.$w;
     }
     for my $e (@errors) {
-	print '    '.$e;
+	print '    ERROR: '.$e;
     }
 }
 
 if($needsecteam) {
-    print "\nPlease contact the SUSE Security Team <security-team\@suse.de>\n";
+    print "\nPlease contact the SUSE Security Team <security\@suse.de>\n";
     $ret = 1;
 }
 
