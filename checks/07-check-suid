@@ -155,6 +155,7 @@ for my $rpm (glob($root."/usr/src/packages/RPMS/*/*")) {
 
 if($needsecteam) {
     print "\nPlease contact the SUSE Security Team <security-team\@suse.de>\n";
+    $ret = 1;
 }
 
 exit $ret;
