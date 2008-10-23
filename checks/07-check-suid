@@ -20,8 +20,8 @@ postfix.paranoid
 sendmail
 sendmail.paranoid
 squid
-tetex
-tetex.paranoid
+texlive
+texlive.paranoid
 /;
 
 ### END CONFIG ##
