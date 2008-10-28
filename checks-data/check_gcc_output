@@ -32,6 +32,8 @@ my %warn_checks = (
     "warning:.*implicit .*'(recv|recvfrom|read|pread|pread64|readlink|getwd|getcwd|fgets|fgets_unlock|strncat|strcat|memmove|memcpy|mempcpy|strpcpy|strcpy|strncpy|printf|sprintf|snprintf|vprintf|vsprintf|vsnprintf|fprintf|vfprintf|gets|memset|bzero|bcopy|strlen|strcmp|wcscpy|wcpcpy|wcsncpy|wcpncpy|wcscat|swprintf|vswprintf|fgetws|wcsrtombs|mbsrtowcs|wcrtomb|wcsnrtombs|ptsname|realpath|wctomb|mbstowcs|ttyname_r|getlogin_r|getgroups|confstr|gethostname|getdomainname|)'" => "implicit-fortify-decl",
     'warning:.*memset used with constant zero length parameter' => "memset-with-zero-length",
     'warning:.*comparison with string literal' => "stringcompare",
+    "warning:.*'return' with no value, in function returning non-void" => "voidreturn",
+    'warning:.*array subscript is (below|above) array bounds' => "arraysubscript"
 );
 
 my %warn_desc = (
@@ -66,6 +68,12 @@ my %warn_desc = (
                    "  - Implicit *read* functions need #include <unistd.h>.\n" .
                    "  - Implicit *recv* functions need #include <sys/socket.h>.\n",
      "no-rpm-opt-flags" => "File is compiled without RPM_OPT_FLAGS",
+
+     "voidreturn" => "A function uses a 'return;' statement, but has actually a value\n" .
+		"to return, like an integer ('return 42;') or similar.\n",
+     "arraysubscript" => "A function overflows or underflows an array access. This could be a real error,\n" .
+                         "but occasionaly this condition is also misdetected due to loop unrolling or strange pointer\n" .
+			 "handling. So this is warning only, please review.\n"
 );
 
 my %warn_severity = (
@@ -86,6 +94,8 @@ my %warn_severity = (
     "bufferoverflowstrncat" => 'E',
     "stringcompare" => 'E',
     "uninitialized-variable" => 'W',
+    "voidreturn" => "W",
+    "arraysubscript" => "W",
 );
 
 #----------------------------------------------------------------------
