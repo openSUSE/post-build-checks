@@ -7,7 +7,7 @@ if test -f /.kernelversion ; then
 fi
 
 if test -z "$MREL" -a -L /usr/src/linux -a -d /usr/src/linux ; then
-    MREL=$( shopt -s nullglob; set -- /lib/modules/*-default /lib/modules/* ; basename $1 )
+    MREL=$( shopt -s nullglob; set -- /lib/modules/*-default /lib/modules/* ; test -n "$1" && basename $1 )
 fi
 
 if test -z "$MREL" -a -L /usr/src/linux -a -d /usr/src/linux -a -d /usr/src/linux-obj ; then
