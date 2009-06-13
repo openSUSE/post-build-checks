@@ -1,3 +1,4 @@
 export SUSE_IGNORED_RPATHS=/etc/ld.so.conf
-export SUSE_ASNEEDED=1
+#for now only in staging
+#export SUSE_ASNEEDED=1
 
