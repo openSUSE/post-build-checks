@@ -1,0 +1,11 @@
+--- checks/01-check-debuginfo.orig	2009-07-27 16:52:05.000000000 +0200
++++ checks/01-check-debuginfo	2009-07-27 16:52:09.000000000 +0200
+@@ -5,7 +5,7 @@
+ fast=
+ test -x /usr/lib/rpm/rpmi && fast="--nodigest --nosignature"
+ 
+-RPMS=`find $BUILD_ROOT/usr/src/packages/RPMS -name "*-debuginfo-*.rpm"`
++RPMS=`find $BUILD_ROOT/usr/src/packages/RPMS -name "*-debuginfo-*.rpm" -o -name "*-debugsource-*.rpm"`
+ test -z "$RPMS" && exit 0
+ for rpm in $RPMS ; do
+   HAS_DEBUG=
