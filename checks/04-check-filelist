@@ -376,6 +376,7 @@ if [ ! -z "$ALL_RPMS" ] ; then
 	/root/bin|\
 	/sbin|\
 	/sbin/*|\
+	/selinux|\
 	/subdomain|\
 	/sys|\
 	/tmp|\
