@@ -1,0 +1,5 @@
+# Patch series file for quilt, created by quilt setup
+# Source: post-build-checks-1.0.tar.bz2
+# Patchdir: post-build-checks-1.0
+#
+check-debuginfo.diff -p0

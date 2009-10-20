@@ -5,7 +5,7 @@ echo "... testing for empty debuginfo packages"
 fast=
 test -x /usr/lib/rpm/rpmi && fast="--nodigest --nosignature"
 
-RPMS=`find $BUILD_ROOT/usr/src/packages/RPMS -name "*-debuginfo-*.rpm"`
+RPMS=`find $BUILD_ROOT/usr/src/packages/RPMS -name "*-debuginfo-*.rpm" -o -name "*-debugsource-*.rpm"`
 test -z "$RPMS" && exit 0
 for rpm in $RPMS ; do
   HAS_DEBUG=
@@ -16,34 +16,11 @@ for rpm in $RPMS ; do
       /usr/src/debug/*) HAS_SRC=true ;;
     esac
   done
-  if test -z "$HAS_DEBUG" ; then
+  if test -z "$HAS_DEBUG" -a -z "$HAS_SRC"; then
     echo '!'
-    echo "!   ${rpm##*/}: no debug information, deleting package"
+    echo "!   $rpm: empty debuginfo/debugsource package, deleting"
     echo '!'
-    rm -f "$rpm" "${rpm/-debuginfo-/-debugsource-}"
-  elif test -z "$HAS_SRC" ; then
-    rpmsource=${rpm/-debuginfo-/-debugsource-}
-    if test -s "${rpmsource}" ; then
-#      for l in "$(rpm -qpl $fast ${rpmsource})" ; do
-#        case "$l" in
-#          /usr/src/debug/*) HAS_SRC=true ;;
-#	  "(contains no files)") HAS_SRC=""; break ;;
-#        esac
-#      done
-      rpm -qpl $fast "${rpmsource}" | egrep -q "^/usr/src/debug/" && HAS_SRC=true
-      if test -n "$HAS_SRC" ; then
-        continue
-      fi
-      echo '!'
-      echo "!   ${rpmsource##*/}: no debug sources, deleting package"
-      echo "!   ${rpm##*/}: WARNING: this probably means the debug information is invalid"
-      echo '!'
-      rm -f "${rpmsource}"
-      continue
-    fi
-    echo '!'
-    echo "!   ${rpm##*/}: WARNING: no sources in debuginfo package"
-    echo '!'
+    rm -f "$rpm"
   fi
 done
 exit 0
