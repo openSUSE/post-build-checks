@@ -1,0 +1,12 @@
+diff -Nur post-build-checks-1.0/checks/99-check-remove-rpms post-build-checks-1.0-new//checks/99-check-remove-rpms
+--- post-build-checks-1.0/checks/99-check-remove-rpms	2008-09-03 15:10:17.000000000 +0200
++++ post-build-checks-1.0-new//checks/99-check-remove-rpms	2010-02-06 18:28:48.718027110 +0100
+@@ -67,4 +67,7 @@
+     }
+ fi
+ 
+-
++# umount proc
++if [ -e $BUILD_ROOT/proc/uptime ]
++	then umount $BUILD_ROOT/proc
++fi
