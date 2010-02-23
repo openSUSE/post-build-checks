@@ -1,0 +1,19 @@
+--- ./checks/04-check-filelist.orig	2009-08-10 00:17:17.000000000 +0000
++++ ./checks/04-check-filelist	2010-02-19 10:59:17.000000000 +0000
+@@ -125,6 +125,16 @@ if [ ! -z "$ALL_RPMS" ] ; then
+ 		;;
+ 	  esac
+         ;;
++	/usr/src/parrot*)
++	  case $RPM_NAME in
++	    parrot-devel)
++		;;
++	    *)
++		echo "$RPM_NAME: \"$LINE\" may only be packaged in the parrot-devel package"
++		UNVALID_FILE_FOUND=true
++		;;
++	  esac
++	;;
+ 	# exceptions for CVS/RCS/liveeval
+ 	/usr/share/doc/howto/en/txt/RCS|\
+ 	/usr/share/YaST2/data/devtools/*|\
