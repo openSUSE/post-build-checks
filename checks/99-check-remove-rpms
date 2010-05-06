@@ -67,4 +67,7 @@ if test -n "$RPM_ERASE_LIST" ; then
     }
 fi
 
-
+# umount proc
+if [ -e $BUILD_ROOT/proc/uptime ]
+	then umount $BUILD_ROOT/proc
+fi

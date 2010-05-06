@@ -5,11 +5,29 @@ echo "... testing for empty debuginfo packages"
 fast=
 test -x /usr/lib/rpm/rpmi && fast="--nodigest --nosignature"
 
+NOSOURCE=0
+SRPMS=`find $BUILD_ROOT/usr/src/packages/SRPMS -name "*.nosrc.rpm"`
+#grep -qE "^NoSource:|^NoPatch:" $BUILD_ROOT/usr/src/packages/SOURCES/$PNAME.spec && NOSOURCE=1
+test -n "$SRPMS" && NOSOURCE=1
+grep -qE "^#KEEP NOSOURCE DEBUGINFO" $BUILD_ROOT/usr/src/packages/SOURCES/$PNAME.spec && NOSOURCE=0
+case $PNAME in
+	kernel*|java*|texlive-bin*|glibc*) NOSOURCE=0 ;;
+esac
+
 RPMS=`find $BUILD_ROOT/usr/src/packages/RPMS -name "*-debuginfo-*.rpm" -o -name "*-debugsource-*.rpm"`
 test -z "$RPMS" && exit 0
 for rpm in $RPMS ; do
   HAS_DEBUG=
   HAS_SRC=
+  if test "$NOSOURCE" = "1" ; then
+    echo '!'
+    echo "!   $rpm: specfile is nosource, deleting"
+    echo "!   to disable have a line \"#KEEP NOSOURCE DEBUGINFO\" in your specfile"
+    echo '!'
+    rm -f "$rpm"
+    continue
+  fi
+  
   for l in `rpm -qpl $fast "$rpm"` ; do
     case "$l" in
       /usr/lib/debug/*) HAS_DEBUG=true ;;

@@ -22,6 +22,7 @@ my %warn_checks = (
     'warning:.*ignoring return value of (?:.*alloc.*|set.*uid), declared with' => "unchecked-return-value",
     'warning:.*type-punned.*strict-aliasing' => "strict-aliasing-punning",
     'warning:.*control reaches end of non-void function' => "no-return-in-nonvoid-function",
+    'warning:.*no return statement in function returning non-void' => "no-return-in-nonvoid-function",
     'warning:.*format not a string literal and no format arguments' => "format-security",
     'warning:.*missing sentinel in function call' => "missing-sentinel",
     'warning:.*call to .* will always overflow destination buffer' => "bufferoverflow",
