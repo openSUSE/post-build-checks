@@ -1,15 +1,7 @@
 #!/usr/bin/perl
 
 @exclude = qw{
-  /CD1
-  /etc/hotplug /etc/hotplug/usb
   /emul /emul/ia32-linux
-  /usr/include/NOVLam /usr/libexec /var/nam
-  /opt/novell/man /opt/novell/man/man1 /opt/novell/man/man5 /opt/novell/man/man7 /opt/novell/man/man8
-  /var/opt/novell /var/opt/novell/tomcat4 /var/opt/novell/tomcat4/webapps /var/opt/novell/tomcat4/webapps/nps
-  /var/opt/novell/tomcat4/webapps/welcome /var/opt/novell/tomcat4/webapps/welcome/WEB-INF
-  /var/opt/novell/tomcat4/webapps/welcome/WEB-INF/XMLData /var/opt/novell/tomcat4/webapps/welcome/images
-  /var/opt/novell/iManager
 };
 
 %dirs = ();
@@ -21,8 +13,6 @@ if (@ARGV) {
   $rname = shift @ARGV;
   $rname = "$rname: " if $rname ne '';
 }
-
-exit 0 if ( $pname eq "busybox-links");
 
 my %myfiles;
 

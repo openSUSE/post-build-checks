@@ -1,0 +1,15 @@
+#!/bin/bash
+# check if all directories are owned by a package
+
+echo "... checking filelist"
+ret=0
+
+for pkg in `find $BUILD_ROOT/.build.packages/RPMS -name "*.rpm"`; do
+	case "$pkg" in
+		*-debuginfo-*|*-debugsource-*) continue ;;
+	esac
+	rpm -qlp $pkg | chroot $BUILD_ROOT /usr/lib/build/checks-data/checkdirs "${pkg##*/}"
+	[ $? = 0 ] || ret=1
+done
+
+exit $ret
