@@ -12,8 +12,4 @@ for pkg in `find $BUILD_ROOT/.build.packages/RPMS -name "*.rpm"`; do
 	[ $? = 0 ] || ret=1
 done
 
-if [ "$ret" -ne 0 ]; then
-	echo "*** This failure will be made fatal at Dec 8, please fix your package ***"
-fi
-#exit $ret
-exit 0
+exit $ret
