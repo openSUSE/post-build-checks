@@ -1,9 +1,7 @@
-struct s {
-  char    *p;
-};
-
-void
-func(struct s *ptr)
-{ 
-  *(void **)&ptr->p = 0; /* { dg-warning "type-punned pointer" } */
+int foo()
+{
+      int i;
+      *(long*)&i = 0;  /* { dg-warning "type-punn" } */
+      return i;
 }
+
