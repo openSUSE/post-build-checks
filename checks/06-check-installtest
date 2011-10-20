@@ -1,6 +1,8 @@
 #!/bin/bash
 
 echo "... testing for pre/postinstall scripts that are not idempotent"
+TOPDIR=/usr/src/packages
+test -d $BUILD_ROOT/.build.packages && TOPDIR=/.build.packages
 
 function umount_all () {
         test -n "$BUILD_ROOT" && {
@@ -16,7 +18,7 @@ function umount_all () {
 SCRIPT_ARG=-e
 
 export YAST_IS_RUNNING="instsys"
-for i in `find $BUILD_ROOT/usr/src/packages/RPMS -name "*.rpm" | sort` ; do
+for i in `find $BUILD_ROOT$TOPDIR/RPMS -name "*.rpm" | sort` ; do
     test -f $i || continue
     pre_p=`chroot $BUILD_ROOT rpm -qp --qf '%{PREINPROG}' ${i#$BUILD_ROOT}`
     post_p=`chroot $BUILD_ROOT rpm -qp --qf '%{POSTINPROG}' ${i#$BUILD_ROOT}`

@@ -2,8 +2,10 @@
 # search for invalid requires.
 #
 export UNVALID_FILE_FOUND=false
+TOPDIR=/usr/src/packages
+test -d $BUILD_ROOT/.build.packages && TOPDIR=/.build.packages
 
-FORBIDDEN_REQ=`find $BUILD_ROOT/usr/src/packages/RPMS -name "*.rpm" | \
+FORBIDDEN_REQ=`find $BUILD_ROOT$TOPDIR/RPMS -name "*.rpm" | \
     xargs --no-run-if-empty rpm -qp --requires| \
     egrep "/usr/local/|/usr/share/bin"`
 
@@ -18,7 +20,7 @@ for LINE in $FORBIDDEN_REQ; do
         esac
 done
 
-RPMLIST=`find $BUILD_ROOT/usr/src/packages/RPMS -name "*.rpm"`
+RPMLIST=`find $BUILD_ROOT$TOPDIR/RPMS -name "*.rpm"`
 for pack in $RPMLIST ; do
 	case $pack in
 		*-debuginfo-*|*-debugsource-*)

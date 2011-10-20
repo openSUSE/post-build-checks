@@ -3,6 +3,10 @@
 # Check binary kernel logfiles for errors in km_* packages.
 # Finally, email notifications should be sent to maintainers/etc.
 
+TOPDIR=/usr/src/packages
+test -d $BUILD_ROOT/.build.packages && TOPDIR=/.build.packages
+test -L $BUILD_ROOT/.build.packages && TOPDIR=/$(readlink $BUILD_ROOT/.build.packages)
+
 case "$PNAME" in
     kernel-source | kernel-dummy | kernel-syms)
 	exit 0 ;;
@@ -47,7 +51,7 @@ quote_bre()
 }
 
 # Generate a list of external module directories.
-extmod_re="\/usr\/src\/packages\/BUILD\/kernel-[^/]*-[^/]*\/modules-[^/]*"
+extmod_re="${TOPDIR//\//\/}\/BUILD\/kernel-[^/]*-[^/]*\/modules-[^/]*"
 extmod_subdirs=$(sed -ne "s/.*Entering directory \`$extmod_re\/\\([^/]*\\)'$/\1/p" $LOGFILE \
 		 | sort -u)
 

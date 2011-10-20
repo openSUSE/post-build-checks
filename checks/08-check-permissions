@@ -1,11 +1,13 @@
 #!/bin/bash
 
 echo "... testing for modified permissions"
+TOPDIR=/usr/src/packages
+test -d $BUILD_ROOT/.build.packages && TOPDIR=/.build.packages
 
 SCRIPT_ARG=-e
 HAD_ERRORS=0
 
-for i in `find $BUILD_ROOT/usr/src/packages/RPMS -name "*.rpm" | sort` ; do
+for i in `find $BUILD_ROOT$TOPDIR/RPMS -name "*.rpm" | sort` ; do
     test -f $i || continue
     NAME=`rpm -qp --qf "%{NAME}" $i`
     test -f $BUILD_ROOT/etc/sysconfig/security || continue

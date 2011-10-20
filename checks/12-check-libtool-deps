@@ -15,6 +15,9 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
+TOPDIR=/usr/src/packages
+test -d $BUILD_ROOT/.build.packages && TOPDIR=/.build.packages
+
 RC=0
 WARN=0
 
@@ -184,7 +187,7 @@ Please add proper package to neededforbuild to complete this check."
 
 echo "... testing devel dependencies required by libtool .la files"
 
-if fgrep -q skip-check-libtool-deps $BUILD_ROOT/usr/src/packages/SOURCES/$PNAME.spec ; then
+if fgrep -q skip-check-libtool-deps $BUILD_ROOT$TOPDIR/SOURCES/$PNAME.spec ; then
     echo "    skipped by \"skip-check-libtool-deps\""
     exit 0
 fi
@@ -193,7 +196,7 @@ echo "    (can be skipped by \"skip-check-libtool-deps\" anywhere in spec)"
 shopt -s nullglob
 IFS=$IFS":,"
 
-for RPM in $BUILD_ROOT/usr/src/packages/RPMS/*/*.rpm ; do
+for RPM in $BUILD_ROOT$TOPDIR/RPMS/*/*.rpm ; do
     check_rpm_requires $RPM
 done
 rpm_find_all_deps_reset

@@ -6,7 +6,10 @@ my $had_errors = 0;
 my $build_root = $::ENV{BUILD_ROOT};
 my @RPMS = ();
 
-open ( ALL_RPMS , "find $build_root/usr/src/packages/RPMS -name \"*.rpm\" |");
+my $TOPDIR = '/usr/src/packages';
+$TOPDIR = '/.build.packages' if -d "$build_root/.build.packages";
+
+open ( ALL_RPMS , "find $build_root$TOPDIR/RPMS -name \"*.rpm\" |");
 while ( my $cur = <ALL_RPMS> ) {
     chomp ( $cur );
     $cur =~ s/^$build_root//;

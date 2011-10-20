@@ -1,8 +1,10 @@
 #!/bin/bash
 
 echo "... installing all built rpms"
+TOPDIR=/usr/src/packages
+test -d $BUILD_ROOT/.build.packages && TOPDIR=/.build.packages
 export YAST_IS_RUNNING="instsys"
-RPM_FILE_LIST=(`find $BUILD_ROOT/usr/src/packages/RPMS -type f -name "*.rpm"`)
+RPM_FILE_LIST=(`find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm"`)
 ADDITIONAL_PARAMS=
 test "$ABUILD_INIT_WITH_IGNORE_ARCH" = true && ADDITIONAL_PARAMS="$ADDITIONAL_PARAMS --ignorearch"
 chroot $BUILD_ROOT rpm $ADDITIONAL_PARAMS --force --nodeps -Uv ${RPM_FILE_LIST[*]#$BUILD_ROOT} || {

@@ -2,13 +2,16 @@
 #
 # search for invalid init.d and cron script names
 #
+TOPDIR=/usr/src/packages
+test -d $BUILD_ROOT/.build.packages && TOPDIR=/.build.packages
+
 export INVALID_FILE_FOUND=false
 
 INITD_DATA=$BUILD_ROOT/usr/lib/build/checks-data/initd.txt
 CRON_DATA=$BUILD_ROOT/usr/lib/build/checks-data/cron.txt
 
 
-ALL_RPMS=`find $BUILD_ROOT/usr/src/packages/RPMS -name "*.rpm"`
+ALL_RPMS=`find $BUILD_ROOT$TOPDIR/RPMS -name "*.rpm"`
 
 if [ ! -z "$ALL_RPMS" ] ; then
 

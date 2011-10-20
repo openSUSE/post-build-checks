@@ -1,9 +1,12 @@
 #!/bin/bash
 # search for invalid requires.
 #
+TOPDIR=/usr/src/packages
+test -d $BUILD_ROOT/.build.packages && TOPDIR=/.build.packages
+
 export UNVALID_FILE_FOUND=false
 
-for package in `find $BUILD_ROOT/usr/src/packages/RPMS -name "*.rpm"` ; do
+for package in `find $BUILD_ROOT$TOPDIR/RPMS -name "*.rpm"` ; do
   if rpm -qp --provides --nodigest --nosignature $package \
      | grep -q -E "^$(rpm -qp --nodigest --nosignature --queryformat='%{NAME}' $package)[[:space:]]*$"; then
 

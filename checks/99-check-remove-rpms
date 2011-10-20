@@ -1,5 +1,8 @@
 #!/bin/bash
 
+TOPDIR=/usr/src/packages
+test -d $BUILD_ROOT/.build.packages && TOPDIR=/.build.packages
+
 function reorder {
     test -z "$*" && return
     rm -rf $BUILD_ROOT/.reorder
@@ -41,7 +44,7 @@ test -d $BUILD_ROOT/proc/sys || mount -n -tproc none $BUILD_ROOT/proc
 echo "... removing all built rpms"
 export YAST_IS_RUNNING="instsys"
 RPM_ERASE_LIST=
-RPM_FILE_LIST=(`find $BUILD_ROOT/usr/src/packages/RPMS -type f -name "*.rpm"`)
+RPM_FILE_LIST=(`find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm"`)
 
 for RPM in `reorder "${RPM_FILE_LIST[@]}"`; do
     PKG=${RPM##*/}

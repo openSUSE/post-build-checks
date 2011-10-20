@@ -16,6 +16,9 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
+TOPDIR=/usr/src/packages
+test -d $BUILD_ROOT/.build.packages && TOPDIR=/.build.packages
+
 RC=0
 
 echo "... testing GConf scriptlet presence"
@@ -24,7 +27,7 @@ if ! test -d $BUILD_ROOT/etc/gconf/schemas ; then
     exit 0
 fi
 
-for RPM in $BUILD_ROOT/usr/src/packages/RPMS/*/*.rpm ; do
+for RPM in $BUILD_ROOT$TOPDIR/RPMS/*/*.rpm ; do
     PREREQ_NEEDED=false
     for FILE in $(rpm -r $BUILD_ROOT -qlp $RPM | grep '^/etc/gconf/schemas/.*\.schemas$') ; do
 	PREREQ_NEEDED=true
