@@ -1,61 +1,76 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 # search for files packaged more than once
+# it is an error if such a file exists but the packages do not conflict
 #
 use strict;
 my $had_errors = 0;
-my $build_root = $::ENV{BUILD_ROOT};
-my @RPMS = ();
+my $build_root = $::ENV{BUILD_ROOT} || '/';
 
 my $TOPDIR = '/usr/src/packages';
 $TOPDIR = '/.build.packages' if -d "$build_root/.build.packages";
 
-open ( ALL_RPMS , "find $build_root$TOPDIR/RPMS -name \"*.rpm\" |");
-while ( my $cur = <ALL_RPMS> ) {
-    chomp ( $cur );
-    $cur =~ s/^$build_root//;
-    push @RPMS, $cur;
-}
-close ( ALL_RPMS );
-
-if ( $#RPMS < 1 ) {
-    exit 0;
-}
-
-my %FILES = ();
-
-for my $cur (@RPMS) {
-  my $rpmname = `chroot $build_root rpm -qp --qf '%{NAME}' $cur`;
-  open ( FILELIST , "chroot $build_root rpm -qplv $cur |");
-  while ( my $file = <FILELIST> ) {
-     chomp ( $file );
-     next if ( $file =~ /^d/ );
-     my @line = split ('\s+',$file);
-     my $filename = "";
-     while (my $file_too = pop(@line)) {
-        if ($file_too eq "->") {
-	    # this was a symlink target
-	    $filename = "";
-        } else {
-	    $filename = $file_too.($filename eq "" ? "" : " ").$filename;
+sub conflicts {
+    my ($rpm1, $rpm2) = @_;
+    open (F, "chroot $build_root rpm -qp --qf '[%{CONFLICTNAME} %{CONFLICTFLAGS} %{CONFLICTVERSION}\n]' $rpm1|");
+    my @conflicts = <F>;
+    close F;
+    chomp @conflicts;
+    return 0 unless @conflicts;
+    open (F, "chroot $build_root rpm -qp --qf '[%{PROVIDENAME} %{PROVIDEFLAGS} %{PROVIDEVERSION}\n]' $rpm2|");
+    my @provides = <F>;
+    close F;
+    for my $c (@conflicts) {
+        my @cc = split(' ', $c, 3);
+        $cc[0] =~ s/^otherproviders\((.*)\)$/$1/;
+        for my $p (@provides) {
+            my @pp = split(' ', $p, 3);
+            next unless $cc[0] eq $pp[0];
+            # add complex logic here if needed
+            return 1;
         }
-        last if ($#line == 7);
-     }
-     if ( $FILES{$filename} ) {
-	#printf "ERROR: $rpmname: $filename already packaged in package $FILES{$filename}\n";
-	printf "WARNING: $rpmname: $filename already packaged in package $FILES{$filename}\n";
-	$had_errors = 1;
-	$FILES{$filename} .= ",$rpmname";
-     } else {
-	$FILES{$filename} = $rpmname;
-     }
-  }
-  close ( FILELIST );
+    }
+    return 0;
 }
 
-#if ( $had_errors ) {
-#   printf "found ERRORS\n";
-#   exit 1;
-#}
+open (ALL_RPMS, "chroot $build_root find $TOPDIR/RPMS/ -name \"*.rpm\" |");
+my @rpms = <ALL_RPMS>;
+chomp @rpms;
+close ALL_RPMS;
 
-exit 0;
+exit 0 if @rpms < 2;
 
+my %allfiles;
+my %pkg2rpm;
+
+for my $rpm (@rpms) {
+    next if ($rpm =~ m/-debuginfo/ || $rpm =~ m/-debugsource/);
+    open (FILES, "chroot $build_root rpm -qp --qf '[%{FILEMODES:perms} F:%{FILEFLAGS:fflags} %{NAME} %{FILENAMES}\n]' $rpm|");
+    my @files = <FILES>;
+    chomp @files;
+    close FILES;
+    # ignore empty rpm as rpmlint will catch them
+    @files = grep {!/^\(none\)/} @files;
+    # ignore dirs
+    @files = grep {!/^d/} @files;
+    for my $file (@files) {
+        next unless $file =~ /^\S+ F:(\S*) (\S+) (.*)$/;
+        $allfiles{$3}->{$2} = $1;
+        $pkg2rpm{$2} = $rpm;
+    }
+}
+
+for my $file (keys %allfiles) {
+    my @pkgs = keys %{$allfiles{$file}};
+    next if @pkgs < 2;
+    while (@pkgs) {
+        my $p1 = shift @pkgs;
+	for my $p2 (@pkgs) {
+	    next if (index($allfiles{$file}->{$p1}, 'g') != -1) && (index($allfiles{$file}->{$p2}, 'g') != -1);
+	    next if conflicts($pkg2rpm{$p1}, $pkg2rpm{$p2}) || conflicts($pkg2rpm{$p2}, $pkg2rpm{$p1});
+	    print "ERROR: $file is packaged in both $p1 and $p2, and the packages do not conflict\n";
+	    $had_errors = 1;
+	}
+    }
+}
+
+exit $had_errors;
