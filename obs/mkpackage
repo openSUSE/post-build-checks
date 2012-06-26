@@ -1,0 +1,49 @@
+#!/bin/bash
+set -e
+shopt -s nullglob
+name="`pwd -P`"
+name=${name##*/}
+name=${name%%.*}
+src="$PWD"
+if [ ! -d "$name/.osc" ]; then
+	echo "*** Error: please check out the package:"
+	echo "osc branch openSUSE:Factory post-build-checks"
+	echo "ln -s home\:*\:branches\:*/post-build-checks ."
+	exit 1
+fi
+if [ "`git --no-pager diff --name-only|wc -l`" != '0' -o "`git --no-pager diff --name-only --cached|wc -l`" != 0 ]; then
+	echo "*** Error: uncomitted changes"
+	echo "run 'git add file' to add files, 'git commit -a' to commit changes"
+	exit 1
+fi
+cd "$name"
+echo "osc up"
+osc up
+cd "$src"
+"$src"/obs/mkchanges "$name/$name".changes | tee "$name"/.changes
+#test ! -s $name/.changes || git push
+for i in *.bz2; do
+	/bin/rm -vi "$i"
+done
+cd "$src"
+"$src"/obs/mktar
+mv *bz2 "$name"
+cd "$name"
+osc vc "$name".changes .changes && rm -f .changes
+cd "$src"
+if [ -n "`git rev-list remotes/origin/master..HEAD`" ]; then
+	pushed=
+	if ! grep -q refs/heads/master .git/HEAD; then
+		echo "Warning: not on master branch"
+	elif read -p "push changes now? (Y/n) "; then
+		if [ -z "$REPLY" -o "${REPLY#y}" != "$REPLY" ]; then
+			git push && pushed=1 || true
+		fi
+	fi
+	if [ -z "$pushed" ]; then
+		echo "*** Warning: changes not pushed!"
+	else
+		cd "$name"
+		osc ci
+	fi
+fi
