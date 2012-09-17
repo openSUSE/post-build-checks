@@ -3,6 +3,7 @@
 # it is an error if such a file exists but the packages do not conflict
 #
 use strict;
+use Data::Dumper;
 my $had_errors = 0;
 my $build_root = $::ENV{BUILD_ROOT} || '/';
 
@@ -40,23 +41,45 @@ close ALL_RPMS;
 exit 0 if @rpms < 2;
 
 my %allfiles;
+my %alldirs;
 my %pkg2rpm;
 
 for my $rpm (@rpms) {
     next if ($rpm =~ m/-debuginfo/ || $rpm =~ m/-debugsource/);
-    open (FILES, "chroot $build_root rpm -qp --qf '[%{FILEMODES:perms} F:%{FILEFLAGS:fflags} %{NAME} %{FILENAMES}\n]' $rpm|");
+    open (FILES, "chroot $build_root rpm -qp --qf '[%{FILEMODES:perms} F:%{FILEFLAGS:fflags} %{NAME} %{FILEUSERNAME}:%{FILEGROUPNAME} %{FILENAMES}\n]' $rpm|");
     my @files = <FILES>;
     chomp @files;
     close FILES;
     # ignore empty rpm as rpmlint will catch them
     @files = grep {!/^\(none\)/} @files;
-    # ignore dirs
-    @files = grep {!/^d/} @files;
     for my $file (@files) {
-        next unless $file =~ /^\S+ F:(\S*) (\S+) (.*)$/;
-        $allfiles{$3}->{$2} = $1;
-        $pkg2rpm{$2} = $rpm;
+        next unless $file =~ /^(\S+) F:(\S*) (\S+) (\S+:\S+) (.*)$/;
+        my $filemodes = $1;
+        my $fflags = $2;
+        my $pkgname = $3;
+        my $owner = $4;
+        my $filename = $5;
+        if ($filemodes =~ /^d/) {
+          $alldirs{$filename}->{$pkgname} = $fflags . $owner;
+        } else {
+          $allfiles{$filename}->{$pkgname} = $fflags;
+        }
+        $pkg2rpm{$pkgname} = $rpm;
     }
+}
+
+for my $dir (keys %alldirs) {
+   my @pkgs = keys %{$alldirs{$dir}};
+   next if @pkgs < 2;
+   my $p1 = shift @pkgs;
+   foreach my $pkg (@pkgs) {
+     if ($alldirs{$dir}->{$p1} ne $alldirs{$dir}->{$pkg}) {
+       my $o1 = $alldirs{$dir}->{$p1};
+       my $o2 = $alldirs{$dir}->{$pkg};
+       print "ERROR: directory $dir is packaged in two different subpackages with different owners $p1($o1) vs $pkg($o2)\n";
+       $had_errors = 1;
+     }
+   }
 }
 
 for my $file (keys %allfiles) {
