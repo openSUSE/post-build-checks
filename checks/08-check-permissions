@@ -17,16 +17,16 @@ for i in `find $BUILD_ROOT$TOPDIR/RPMS -name "*.rpm" | sort` ; do
 	$BUILD_ROOT/etc/sysconfig/security > $BUILD_ROOT/etc/sysconfig/security.tmp
     mv $BUILD_ROOT/etc/sysconfig/security $BUILD_ROOT/etc/sysconfig/security.bak
     mv $BUILD_ROOT/etc/sysconfig/security.tmp $BUILD_ROOT/etc/sysconfig/security
-    chroot $BUILD_ROOT /sbin/SuSEconfig --module permissions >/dev/null 2>&1
+    chroot $BUILD_ROOT /usr/bin/chkstat --suseconfig >/dev/null 2>&1
     chroot $BUILD_ROOT rpm -Vp ${i#$BUILD_ROOT} > $BUILD_ROOT/.build_patchrpmcheck2
     mv $BUILD_ROOT/etc/sysconfig/security.bak $BUILD_ROOT/etc/sysconfig/security
-    chroot $BUILD_ROOT /sbin/SuSEconfig --module permissions >/dev/null 2>&1
+    chroot $BUILD_ROOT /usr/bin/chkstat --suseconfig >/dev/null 2>&1
     
     umount -n $BUILD_ROOT/proc
     if ! cmp -s $BUILD_ROOT/.build_patchrpmcheck1 $BUILD_ROOT/.build_patchrpmcheck2; then
 	echo "--------------------------------------------------------------------"
 	echo "package: $NAME"
-	echo "SuSEconfig.permissions modified files that are not properly handled!"
+	echo "/usr/bin/chkstat modified files that are not properly handled!"
 	echo "this will break rpm -V, ask ro for details."
 	echo "diff for both runs of rpm -V:"
 	diff -u $BUILD_ROOT/.build_patchrpmcheck1 $BUILD_ROOT/.build_patchrpmcheck2 | tail -n+4 | grep -v '^ '
