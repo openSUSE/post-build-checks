@@ -44,6 +44,7 @@ my %allfiles;
 my %alldirs;
 my %pkg2rpm;
 
+system("mount -n -tproc none $build_root/proc");
 for my $rpm (@rpms) {
     next if ($rpm =~ m/-debuginfo/ || $rpm =~ m/-debugsource/);
     open (FILES, "chroot $build_root rpm -qp --qf '[%{FILEMODES:perms} F:%{FILEFLAGS:fflags} %{NAME} %{FILEUSERNAME}:%{FILEGROUPNAME} %{FILENAMES}\n]' $rpm|");
@@ -96,4 +97,5 @@ for my $file (keys %allfiles) {
     }
 }
 
+system("umount $build_root/proc");
 exit $had_errors;

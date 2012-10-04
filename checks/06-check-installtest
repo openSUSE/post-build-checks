@@ -17,6 +17,8 @@ function umount_all () {
 
 SCRIPT_ARG=-e
 
+# rpm needs /proc mounted
+mount -n -tproc none $BUILD_ROOT/proc
 export YAST_IS_RUNNING="instsys"
 for i in `find $BUILD_ROOT$TOPDIR/RPMS -name "*.rpm" | sort` ; do
     test -f $i || continue
