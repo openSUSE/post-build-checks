@@ -198,6 +198,7 @@ my $in_build_stage = 0;
 while (<>) {
     chomp;
     s,  +, ,g;
+    s/^\[ *\d+s\] //;
     next if (m,/usr/include/c\+\+/,);
 
     $in_build_stage = 1 if (/^Executing\(\%build/);
