@@ -10,92 +10,15 @@ my $build_root = $::ENV{BUILD_ROOT} || '/';
 my $TOPDIR = '/usr/src/packages';
 $TOPDIR = '/.build.packages' if -d "$build_root/.build.packages";
 
-sub conflicts {
-    my ($rpm1, $rpm2) = @_;
-    open (F, "chroot $build_root rpm -qp --qf '[%{CONFLICTNAME} %{CONFLICTFLAGS} %{CONFLICTVERSION}\n]' $rpm1|");
-    my @conflicts = <F>;
-    close F;
-    chomp @conflicts;
-    return 0 unless @conflicts;
-    open (F, "chroot $build_root rpm -qp --qf '[%{PROVIDENAME} %{PROVIDEFLAGS} %{PROVIDEVERSION}\n]' $rpm2|");
-    my @provides = <F>;
-    close F;
-    for my $c (@conflicts) {
-        my @cc = split(' ', $c, 3);
-        $cc[0] =~ s/^otherproviders\((.*)\)$/$1/;
-        for my $p (@provides) {
-            my @pp = split(' ', $p, 3);
-            next unless $cc[0] eq $pp[0];
-            # add complex logic here if needed
-            return 1;
-        }
-    }
-    return 0;
+local(*OUTPUT, $/);
+open (OUTPUT, "chroot '$build_root' /bin/bash -c 'find $TOPDIR/RPMS/ -name \"*.rpm\" | grep -v -- -debuginfo | grep -v -- -debugsource | perl /usr/lib/build/checks-data/findfileconflicts --manifest -q -' 2>&1 |");
+my $output = <OUTPUT>;
+close(OUTPUT);
+
+if ($output) {
+  print $output . "\n";
+  exit 1;
 }
 
-open (ALL_RPMS, "chroot $build_root find $TOPDIR/RPMS/ -name \"*.rpm\" |");
-my @rpms = <ALL_RPMS>;
-chomp @rpms;
-close ALL_RPMS;
+exit 0;
 
-exit 0 if @rpms < 2;
-
-my %allfiles;
-my %alldirs;
-my %pkg2rpm;
-
-system("mount -n -tproc none $build_root/proc");
-for my $rpm (@rpms) {
-    next if ($rpm =~ m/-debuginfo/ || $rpm =~ m/-debugsource/);
-    open (FILES, "chroot $build_root rpm -qp --qf '[%{FILEMODES:perms} F:%{FILEFLAGS:fflags} %{NAME} %{FILEUSERNAME}:%{FILEGROUPNAME} %{FILENAMES}\n]' $rpm|");
-    my @files = <FILES>;
-    chomp @files;
-    close FILES;
-    # ignore empty rpm as rpmlint will catch them
-    @files = grep {!/^\(none\)/} @files;
-    for my $file (@files) {
-        next unless $file =~ /^(\S+) F:(\S*) (\S+) (\S+:\S+) (.*)$/;
-        my $filemodes = $1;
-        my $fflags = $2;
-        my $pkgname = $3;
-        my $owner = $4;
-        my $filename = $5;
-        if ($filemodes =~ /^d/) {
-          $alldirs{$filename}->{$pkgname} = "$fflags:$owner";
-        } else {
-          $allfiles{$filename}->{$pkgname} = $fflags;
-        }
-        $pkg2rpm{$pkgname} = $rpm;
-    }
-}
-
-for my $dir (keys %alldirs) {
-   my @pkgs = keys %{$alldirs{$dir}};
-   next if @pkgs < 2;
-   my $p1 = shift @pkgs;
-   foreach my $pkg (@pkgs) {
-     if ($alldirs{$dir}->{$p1} ne $alldirs{$dir}->{$pkg}) {
-       my $o1 = $alldirs{$dir}->{$p1};
-       my $o2 = $alldirs{$dir}->{$pkg};
-       print "ERROR: directory $dir is packaged in two different subpackages with different owners $p1($o1) vs $pkg($o2)\n";
-       $had_errors = 1;
-     }
-   }
-}
-
-for my $file (keys %allfiles) {
-    my @pkgs = keys %{$allfiles{$file}};
-    next if @pkgs < 2;
-    while (@pkgs) {
-        my $p1 = shift @pkgs;
-	for my $p2 (@pkgs) {
-	    next if (index($allfiles{$file}->{$p1}, 'g') != -1) && (index($allfiles{$file}->{$p2}, 'g') != -1);
-	    next if conflicts($pkg2rpm{$p1}, $pkg2rpm{$p2}) || conflicts($pkg2rpm{$p2}, $pkg2rpm{$p1});
-	    print "ERROR: $file is packaged in both $p1 and $p2, and the packages do not conflict\n";
-	    $had_errors = 1;
-	}
-    }
-}
-
-system("umount $build_root/proc");
-exit $had_errors;

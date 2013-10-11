@@ -16,20 +16,20 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 TOPDIR=/usr/src/packages
-test -d $BUILD_ROOT/.build.packages && TOPDIR=/.build.packages
+test -d "$BUILD_ROOT/.build.packages" && TOPDIR=/.build.packages
 
 RC=0
 WARN=0
 
 # Set default PKG_CONFIG_PATH, if not defined.
-if test -d $BUILD_ROOT/usr/lib64 ; then
+if test -d "$BUILD_ROOT/usr/lib64" ; then
     BUILD_LD_LIBRARY_PATH=/lib64:/usr/lib64
 else
     BUILD_LD_LIBRARY_PATH=/lib:/usr/lib
 fi
 
 shopt -s nullglob
-for DIR in $BUILD_ROOT/usr/lib*/gcc-lib/*/* $BUILD_ROOT/usr/lib*/gcc/*/* ; do
+for DIR in "$BUILD_ROOT"/usr/lib*/gcc-lib/*/* "$BUILD_ROOT"/usr/lib*/gcc/*/* ; do
     BUILD_LD_LIBRARY_PATH=$BUILD_LD_LIBRARY_PATH:${DIR#$BUILD_ROOT}
 done
 
@@ -37,10 +37,10 @@ function get_ld_library_path {
     local FILE
     local -a INCLUDES
     for FILE in $@ ; do
-	if ! test -r $BUILD_ROOT$FILE ; then
+	if ! test -r "$BUILD_ROOT$FILE" ; then
 	    continue
 	fi
-	exec 3<$BUILD_ROOT$FILE
+	exec 3<"$BUILD_ROOT$FILE"
 	while read -u3 ; do
 	    if test "$REPLY" = "${REPLY#include}" ; then
 		BUILD_LD_LIBRARY_PATH="$BUILD_LD_LIBRARY_PATH $REPLY"
@@ -56,12 +56,12 @@ function get_ld_library_path {
 }
 get_ld_library_path /etc/ld.so.conf
 
-BUILD_LD_LIBRARY_PATH="$BUILD_LD_LIBRARY_PATH $(unset LD_LIBRARY_PATH ; for FILE in $BUILD_ROOT/etc/profile.d/*.sh ; do echo $FILE ; source $FILE ; done >/dev/null 2>&1 ; echo $LD_LIBRARY_PATH)"
+BUILD_LD_LIBRARY_PATH="$BUILD_LD_LIBRARY_PATH $(unset LD_LIBRARY_PATH ; for FILE in "$BUILD_ROOT"/etc/profile.d/*.sh ; do echo $FILE ; source $FILE ; done >/dev/null 2>&1 ; echo $LD_LIBRARY_PATH)"
 
 # Assign file to RPM package.
 # assign_rpm file
 function assign_rpm {
-    ASSIGN_RPM=$(chroot $BUILD_ROOT rpm --queryformat '%{NAME}\n' -qf $1)
+    ASSIGN_RPM=$(chroot "$BUILD_ROOT" rpm --queryformat '%{NAME}\n' -qf $1)
 }
 
 # Prepare for rpm_find_all_deps and clean after rpm_find_all_deps.
@@ -87,7 +87,7 @@ function rpm_find_all_deps {
     eval "known=\$$SYMBOL_NAME"
     if test -z "$known"; then
         # the double quotes are necessary to retain the line endings
-        known="$(chroot $BUILD_ROOT rpm -q --requires $1 2>/dev/null)"
+        known="$(chroot '$BUILD_ROOT' rpm -q --requires $1 2>/dev/null)"
         if test $? -gt 0 ; then
 	    known=nonrpm
         fi
@@ -122,15 +122,15 @@ function rpm_find_all_deps {
 function check_rpm_requires {
     PACK=$1
     PACK=${PACK##$BUILD_ROOT}
-    : > $BUILD_ROOT/tmp/missings-$ASSIGN_RPM
+    : > "$BUILD_ROOT/tmp/missings-$ASSIGN_RPM"
     LAST_RPM=
-    for LA in $(chroot $BUILD_ROOT rpm -qlp $PACK | grep '.*/lib.*/.*\.la$') ; do
+    for LA in $(chroot "$BUILD_ROOT" rpm -qlp $PACK | grep '.*/lib.*/.*\.la$') ; do
 	LOCAL_LIBRARY_PATH=$BUILD_LD_LIBRARY_PATH
 	assign_rpm $LA
 	RPM=$ASSIGN_RPM
 	if test "$LAST_RPM" != "$RPM"; then
 	    rpm_find_all_deps_reset
-	    rpm_find_all_deps $RPM >$BUILD_ROOT/tmp/all-deps
+	    rpm_find_all_deps $RPM >"$BUILD_ROOT/tmp/all-deps"
 	    LAST_RPM=$RPM
 	fi
 	test "$(source $BUILD_ROOT$LA; echo $shouldnotlink)" = yes && continue
@@ -203,7 +203,7 @@ for RPM in $BUILD_ROOT$TOPDIR/RPMS/*/*.rpm ; do
 done
 rpm_find_all_deps_reset
 
-umount $BUILD_ROOT/proc
+umount "$BUILD_ROOT/proc"
 
 if test $RC -gt 0 ; then
     echo "All errors are just warnings for now.
