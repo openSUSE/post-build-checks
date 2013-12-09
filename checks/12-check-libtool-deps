@@ -36,7 +36,7 @@ done
 function get_ld_library_path {
     local FILE
     local -a INCLUDES
-    for FILE in $@ ; do
+    for FILE in "$@"; do
 	if ! test -r "$BUILD_ROOT$FILE" ; then
 	    continue
 	fi
@@ -50,8 +50,8 @@ function get_ld_library_path {
 	done
 	exec 3<&-
     done
-    for FILE in ${INCLUDES[@]} ; do
-	eval get_ld_library_path $FILE
+    for FILE in "${INCLUDES[@]}" ; do
+	eval get_ld_library_path "$FILE"
     done
 }
 get_ld_library_path /etc/ld.so.conf
@@ -61,14 +61,14 @@ BUILD_LD_LIBRARY_PATH="$BUILD_LD_LIBRARY_PATH $(unset LD_LIBRARY_PATH ; for FILE
 # Assign file to RPM package.
 # assign_rpm file
 function assign_rpm {
-    ASSIGN_RPM=$(chroot "$BUILD_ROOT" rpm --queryformat '%{NAME}\n' -qf $1)
+    ASSIGN_RPM=$(chroot "$BUILD_ROOT" rpm --queryformat '%{NAME}\n' -qf "$1")
 }
 
 # Prepare for rpm_find_all_deps and clean after rpm_find_all_deps.
 # rpm_find_all_deps_reset
 function rpm_find_all_deps_reset {
     unset DUMMY ${!rpmsym_*}
-    rm -f $BUILD_ROOT/tmp/all-requires $BUILD_ROOT/tmp/all-deps
+    rm -f "$BUILD_ROOT"/tmp/all-requires "$BUILD_ROOT"/tmp/all-deps
 }
 
 # List all dependent packages exploring only explicit dependencies.
@@ -86,12 +86,11 @@ function rpm_find_all_deps {
     SYMBOL_NAME=know_$SYMBOL_NAME
     eval "known=\$$SYMBOL_NAME"
     if test -z "$known"; then
-        # the double quotes are necessary to retain the line endings
-        known="$(chroot "$BUILD_ROOT" rpm -q --requires $1 2>/dev/null)"
+        known=$(chroot "$BUILD_ROOT" rpm -q --requires $1 2>/dev/null)
         if test $? -gt 0 ; then
 	    known=nonrpm
         fi
-	eval "$SYMBOL_NAME=\"$known\""
+	eval "$SYMBOL_NAME=\$known"
     fi
     if test "$known" = "nonrpm"; then
         return
@@ -107,9 +106,9 @@ function rpm_find_all_deps {
 	SYMBOL_NAME=${SYMBOL_NAME//)/_CB_}
 	SYMBOL_NAME=${SYMBOL_NAME//[^A-Za-z0-9]/_X_}
 	SYMBOL_NAME=rpmsym_$SYMBOL_NAME
-	eval "if test -z \"\$$SYMBOL_NAME\" ; then
-	    SYMBOLS[${#SYMBOLS[@]}]='$SYMBOL'
-	fi"
+	if eval test -z \"\$$SYMBOL_NAME\" ; then
+	    SYMBOLS[${#SYMBOLS[@]}]=$SYMBOL
+	fi
 	eval "$SYMBOL_NAME=1"
     done <<<"$known"
     for SYMBOL in ${SYMBOLS[@]} ; do
@@ -133,8 +132,8 @@ function check_rpm_requires {
 	    rpm_find_all_deps $RPM >"$BUILD_ROOT/tmp/all-deps"
 	    LAST_RPM=$RPM
 	fi
-	test "$(source $BUILD_ROOT$LA; echo $shouldnotlink)" = yes && continue
-	for LIB in $(source $BUILD_ROOT$LA ; echo "$dependency_libs") ; do
+	test "$(source "$BUILD_ROOT$LA"; echo "$shouldnotlink")" = yes && continue
+	for LIB in $(source "$BUILD_ROOT$LA" ; echo "$dependency_libs") ; do
 	    case $LIB in
 		-L* )
 		    LOCAL_LIBRARY_PATH="$LOCAL_LIBRARY_PATH ${LIB#-L}"
@@ -143,11 +142,11 @@ function check_rpm_requires {
 		-l* )
 		    DEPLIB=
 		    for DIR in $LOCAL_LIBRARY_PATH ; do
-			if test -f $BUILD_ROOT$DIR/lib${LIB#-l}.so ; then
+			if test -f "$BUILD_ROOT$DIR/lib${LIB#-l}.so" ; then
 			    DEPLIB=$DIR/lib${LIB#-l}.so
 			    break
 			fi
-			if test -f $BUILD_ROOT$DIR/lib${LIB#-l}.a ; then
+			if test -f "$BUILD_ROOT$DIR/lib${LIB#-l}.a" ; then
 			    DEPLIB=$DIR/lib${LIB#-l}.a
 			    break
 			fi
@@ -168,9 +167,9 @@ Please add proper package to neededforbuild to complete this check."
 	    esac
 	    assign_rpm $DEPLIB
 	    # FIXME: Can it happen, that library is not part of any package?
-	    if ! grep -q ^$ASSIGN_RPM'\( \|$\)' $BUILD_ROOT/tmp/all-deps ; then
-	    	test -f $BUILD_ROOT/tmp/missing-$RPM && grep -q "$ASSIGN_RPM" $BUILD_ROOT/tmp/missing-$RPM && continue
-		echo "$ASSIGN_RPM" >> $BUILD_ROOT/tmp/missing-$RPM
+	    if ! grep -q ^$ASSIGN_RPM'\( \|$\)' "$BUILD_ROOT"/tmp/all-deps ; then
+		test -f "$BUILD_ROOT"/tmp/missing-$RPM && grep -q "$ASSIGN_RPM" "$BUILD_ROOT"/tmp/missing-$RPM && continue
+		echo "$ASSIGN_RPM" >> "$BUILD_ROOT"/tmp/missing-$RPM
 		if test "$ASSIGN_RPM" != "$RPM" ; then
 		    if test "${RPM#*-devel}" ; then
 			echo "Warning: Missing \"Requires: $ASSIGN_RPM\" in dependency chain ($LA from $RPM requires $DEPLIB)."
@@ -187,18 +186,18 @@ Please add proper package to neededforbuild to complete this check."
 
 echo "... testing devel dependencies required by libtool .la files"
 
-if fgrep -q skip-check-libtool-deps $BUILD_ROOT$TOPDIR/SOURCES/$PNAME.spec ; then
+if fgrep -q skip-check-libtool-deps "$BUILD_ROOT"$TOPDIR/SOURCES/$PNAME.spec ; then
     echo "    skipped by \"skip-check-libtool-deps\""
     exit 0
 fi
 echo "    (can be skipped by \"skip-check-libtool-deps\" anywhere in spec)"
 
-mount -n -tproc none $BUILD_ROOT/proc
+mount -n -tproc none "$BUILD_ROOT"/proc
 
 shopt -s nullglob
 IFS=$IFS":,"
 
-for RPM in $BUILD_ROOT$TOPDIR/RPMS/*/*.rpm ; do
+for RPM in "$BUILD_ROOT"$TOPDIR/RPMS/*/*.rpm ; do
     check_rpm_requires $RPM
 done
 rpm_find_all_deps_reset
