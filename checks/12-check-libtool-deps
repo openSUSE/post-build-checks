@@ -87,7 +87,7 @@ function rpm_find_all_deps {
     eval "known=\$$SYMBOL_NAME"
     if test -z "$known"; then
         # the double quotes are necessary to retain the line endings
-        known="$(chroot '$BUILD_ROOT' rpm -q --requires $1 2>/dev/null)"
+        known="$(chroot "$BUILD_ROOT" rpm -q --requires $1 2>/dev/null)"
         if test $? -gt 0 ; then
 	    known=nonrpm
         fi
