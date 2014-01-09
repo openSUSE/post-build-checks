@@ -192,8 +192,6 @@ if fgrep -q skip-check-libtool-deps "$BUILD_ROOT"$TOPDIR/SOURCES/$PNAME.spec ; t
 fi
 echo "    (can be skipped by \"skip-check-libtool-deps\" anywhere in spec)"
 
-mount -n -tproc none "$BUILD_ROOT"/proc
-
 shopt -s nullglob
 IFS=$IFS":,"
 
@@ -201,8 +199,6 @@ for RPM in "$BUILD_ROOT"$TOPDIR/RPMS/*/*.rpm ; do
     check_rpm_requires $RPM
 done
 rpm_find_all_deps_reset
-
-umount "$BUILD_ROOT/proc"
 
 if test $RC -gt 0 ; then
     echo "All errors are just warnings for now.

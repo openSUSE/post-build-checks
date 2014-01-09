@@ -4,21 +4,11 @@ echo "... testing for pre/postinstall scripts that are not idempotent"
 TOPDIR=/usr/src/packages
 test -d $BUILD_ROOT/.build.packages && TOPDIR=/.build.packages
 
-function umount_all () {
-        test -n "$BUILD_ROOT" && {
-            if test -f /proc/mounts ; then
-                REAL_BR=$(cd $BUILD_ROOT; pwd -P)
-                umount -n `sed -ne "s@.* \(${REAL_BR}/[^ ]*\) .*@\1@p" /proc/mounts` 2>/dev/null
-            else
-                find $BUILD_ROOT/* -depth -xdev -type d -print0 | xargs -0 umount 2>/dev/null
-            fi
-        }
-}
-
 SCRIPT_ARG=-e
 
-# rpm needs /proc mounted
-mount -n -tproc none $BUILD_ROOT/proc
+# rpm needs /proc mounted - the build script handles that. just verify it did
+test -d $BUILD_ROOT/proc/sys || { echo "proc is not mounted"; exit 1; }
+
 export YAST_IS_RUNNING="instsys"
 for i in `find $BUILD_ROOT$TOPDIR/RPMS -name "*.rpm" | sort` ; do
     test -f $i || continue
@@ -31,13 +21,11 @@ for i in `find $BUILD_ROOT$TOPDIR/RPMS -name "*.rpm" | sort` ; do
     preun=`chroot $BUILD_ROOT rpm -qp --qf '%{PREUN}' ${i#$BUILD_ROOT}`
     postun=`chroot $BUILD_ROOT rpm -qp --qf '%{POSTUN}' ${i#$BUILD_ROOT}`
     test "$pre" = "(none)" -a "$post" = "(none)" -a "$preun" = "(none)" -a "$postun" = "(none)" && continue
-    test -d $BUILD_ROOT/proc/sys || mount -n -tproc none $BUILD_ROOT/proc
     chroot $BUILD_ROOT rpm -Vp ${i#$BUILD_ROOT} > $BUILD_ROOT/.build_patchrpmcheck1
     if test "$pre" != "(none)" -a "$pre_p" != "<lua>" ; then
 	echo "$pre" > $BUILD_ROOT/.build_patchrpmcheck_scr
 	chroot $BUILD_ROOT sh $SCRIPT_ARG /.build_patchrpmcheck_scr 2 || {
 	    echo "preinstall script of ${i##*/} failed"
-	    umount_all
 	    touch $BUILD_ROOT/not-ready
 	    exit 1
 	}
@@ -46,7 +34,6 @@ for i in `find $BUILD_ROOT$TOPDIR/RPMS -name "*.rpm" | sort` ; do
 	echo "$post" > $BUILD_ROOT/.build_patchrpmcheck_scr
 	chroot $BUILD_ROOT sh $SCRIPT_ARG /.build_patchrpmcheck_scr 2 || {
 	    echo "postinstall script of ${i##*/} failed"
-	    umount_all
 	    touch $BUILD_ROOT/not-ready
 	    exit 1
 	}
@@ -55,7 +42,6 @@ for i in `find $BUILD_ROOT$TOPDIR/RPMS -name "*.rpm" | sort` ; do
 	echo "$preun" > $BUILD_ROOT/.build_patchrpmcheck_scr
 	chroot $BUILD_ROOT sh $SCRIPT_ARG /.build_patchrpmcheck_scr 1 || {
 	    echo "preuninstall script of ${i##*/} failed"
-	    umount_all
 	    touch $BUILD_ROOT/not-ready
 	    exit 1
 	}
@@ -64,13 +50,11 @@ for i in `find $BUILD_ROOT$TOPDIR/RPMS -name "*.rpm" | sort` ; do
 	echo "$postun" > $BUILD_ROOT/.build_patchrpmcheck_scr
 	chroot $BUILD_ROOT sh $SCRIPT_ARG /.build_patchrpmcheck_scr 1 || {
 	    echo "postuninstall script of ${i##*/} failed"
-	    umount_all
 	    touch $BUILD_ROOT/not-ready
 	    exit 1
 	}
     fi
     chroot $BUILD_ROOT rpm -Vp ${i#$BUILD_ROOT} > $BUILD_ROOT/.build_patchrpmcheck2
-    umount_all
     if ! cmp -s $BUILD_ROOT/.build_patchrpmcheck1 $BUILD_ROOT/.build_patchrpmcheck2; then
 	echo "pre/postinstall/uninstall script of ${i##*/} modifies filelist!"
 	echo "filelist diff:"
