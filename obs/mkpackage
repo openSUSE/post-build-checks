@@ -22,12 +22,12 @@ osc up
 cd "$src"
 "$src"/obs/mkchanges "$name/$name".changes | tee "$name"/.changes
 #test ! -s $name/.changes || git push
-for i in *.bz2; do
+for i in *.xz; do
 	/bin/rm -vi "$i"
 done
 cd "$src"
 "$src"/obs/mktar
-mv *bz2 "$name"
+mv *xz "$name"
 cd "$name"
 osc vc "$name".changes .changes && rm -f .changes
 cd "$src"
