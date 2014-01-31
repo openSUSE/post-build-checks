@@ -29,7 +29,7 @@ MREL=`grep UTS /usr/include/linux/version.h 2> /dev/null | sed -ne "s/.*\"\(.*\)
 fi
 
 if test -n "$MREL" ; then
-    echo $OUTPUT | sed -e "s/[0-9]\.[0-9]\.[0-9][-.0-9a-zA-Z_]*/$MREL/"
+    echo $OUTPUT | sed -e "s/[0-9]\.[0-9]\+\.[0-9][-.0-9a-zA-Z_]*/$MREL/"
 else
     echo $OUTPUT
 fi
