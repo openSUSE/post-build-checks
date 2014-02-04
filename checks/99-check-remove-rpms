@@ -50,7 +50,10 @@ for RPM in `reorder "${RPM_FILE_LIST[@]}"`; do
     PKG=${RPM##*/}
     PKG=${PKG%-*-*.*.rpm}
     PKG=${PKG%.rpm}
+    # Do not remove installed packages
     test -e "$BUILD_ROOT/installed-pkg/$PKG" && continue
+    # Nor packages differing in the shlib version like libreadline5 vs.
+    # libreadline6
     PKG1=${PKG%[0-9]}[0-9]
     test -e $BUILD_ROOT/installed-pkg/$PKG1 && {
         N=`ls $BUILD_ROOT/installed-pkg/$PKG1`
@@ -58,7 +61,14 @@ for RPM in `reorder "${RPM_FILE_LIST[@]}"`; do
 	echo "(keeping $PKG because of $N)"
 	continue
     }
-    RPM_ERASE_LIST="$RPM_ERASE_LIST $PKG"
+    # Do not remove libgcc or libstdc++ variants
+    case ${RPM} in
+    libgcc*|libstdc++*)
+	;;
+    *)
+	RPM_ERASE_LIST="$RPM_ERASE_LIST $PKG"
+	;;
+    esac
 done
 test -z "$REORDER_MISSED" || echo "    (reorder missed ${REORDER_MISSED% })"
 if test -n "$RPM_ERASE_LIST" ; then
