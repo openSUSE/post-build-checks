@@ -219,8 +219,8 @@ while (<>) {
     my $iscompilerline = 0;
     if (/^(|.*[\s;\/]+)(gcc|cc|g\+\+) .*/i) {
         # avoid make dep lines...
-        $iscompilerline = 1 if (! /(-E|-MD|-shared|gccmakedep)/);
-        $iscompilerline = 1 if (/-MD/ && /\.o /); # -MD and object output
+        $iscompilerline = 1 if (! /(-E|-MD|-MM|-shared|gccmakedep)/);
+        $iscompilerline = 1 if (/(-MD|-MM)/ && /\.o /); # -MD or -MM and object output
     }
     # libtool needs some special love.
     $iscompilerline = 1 if (/libtool.*--mode=compile.*(gcc|cc|g\+\+)/i);
