@@ -62,7 +62,7 @@ for RPM in `reorder "${RPM_FILE_LIST[@]}"`; do
 	continue
     }
     # Do not remove libgcc or libstdc++ variants
-    case ${RPM} in
+    case ${PKG} in
     libgcc*|libstdc++*)
 	;;
     *)
