@@ -51,7 +51,7 @@ quote_bre()
 }
 
 # Generate a list of external module directories.
-extmod_re="${TOPDIR//\//\/}\/BUILD\/kernel-[^/]*-[^/]*\/modules-[^/]*"
+extmod_re="${TOPDIR//\//\\/}\/BUILD\/kernel-[^/]*-[^/]*\/modules-[^/]*"
 extmod_subdirs=$(sed -ne "s/.*Entering directory \`$extmod_re\/\\([^/]*\\)'$/\1/p" $LOGFILE \
 		 | sort -u)
 
