@@ -52,6 +52,8 @@ for RPM in `reorder "${RPM_FILE_LIST[@]}"`; do
     PKG=${PKG%.rpm}
     # Do not remove installed packages
     test -e "$BUILD_ROOT/installed-pkg/$PKG" && continue
+    # Do not remove packages that have a corresponding -mini installed (used to avoid cycles)
+    test -e "$BUILD_ROOT/installed-pkg/$PKG-mini" && continue
     # Nor packages differing in the shlib version like libreadline5 vs.
     # libreadline6
     PKG1=${PKG%[0-9]}[0-9]
