@@ -41,7 +41,7 @@ my %warn_checks = (
 my %warn_desc = (
     "strict-aliasing-punning" =>  "Program is likely to break with new gcc. Try -fno-strict-aliasing.\n",
     "sequence-point" => "Program causes undefined operation\n(likely same variable used twice" .
-            "and post/pre incremented in the same expression).\n" .
+            " and post/pre incremented in the same expression).\n" .
             "e.g. x = x++; Split it in two operations.",
     "mathmeaning" => "Program uses operation a <= b <= c, which is not well defined.\n",
     "no-return-in-nonvoid-function" => "Program returns random data in a function",
