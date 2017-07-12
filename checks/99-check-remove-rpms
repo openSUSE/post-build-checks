@@ -56,13 +56,15 @@ for RPM in `reorder "${RPM_FILE_LIST[@]}"`; do
     test -e "$BUILD_ROOT/installed-pkg/$PKG-mini" && continue
     # Nor packages differing in the shlib version like libreadline5 vs.
     # libreadline6
-    PKG1=${PKG%[0-9]}[0-9]
-    test -e $BUILD_ROOT/installed-pkg/$PKG1 && {
-        N=`ls $BUILD_ROOT/installed-pkg/$PKG1`
+    # libtool allows for version match like libbla-1_2-5 thus we should match
+    # for it all possibilities and pass if the soname changed
+    PKG1=${PKG//[0-9_-]/}[0-9]*
+    if [[ `ls -1 $BUILD_ROOT/installed-pkg/$PKG1 2>/dev/null | wc -l ` -gt 0 ]]; then
+        N=`ls -1 $BUILD_ROOT/installed-pkg/$PKG1 |head -n1`
 	N=`basename $N`
 	echo "(keeping $PKG because of $N)"
 	continue
-    }
+    fi
     # Do not remove libgcc or libstdc++ variants
     case ${PKG} in
     libgcc*|libstdc++*)
