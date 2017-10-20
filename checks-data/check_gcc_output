@@ -30,12 +30,12 @@ my %warn_checks = (
     'warning:.*(called with bigger.*destination buffer)|(writing .* bytes into a region of size .* overflows the destination)' => "destbufferoverflow",
     'warning:.*is used uninitialized in this function' => "uninitialized-variable",
     'warning:.*too few arguments for format' => "missing-arg-for-fmt-string",
-    "warning:.*implicit .*'(recv|recvfrom|read|pread|pread64|readlink|getwd|getcwd|fgets|fgets_unlock|strncat|strcat|memmove|memcpy|mempcpy|memcmp|strpcpy|strcpy|strchr|strncpy|printf|sprintf|snprintf|vprintf|vsprintf|vsnprintf|fprintf|vfprintf|gets|memset|bzero|bcopy|strlen|strcmp|wcscpy|wcpcpy|wcsncpy|wcpncpy|wcscat|swprintf|vswprintf|fgetws|wcsrtombs|mbsrtowcs|wcrtomb|wcsnrtombs|ptsname|realpath|wctomb|mbstowcs|ttyname_r|getlogin_r|getgroups|confstr|gethostname|getdomainname|puts|seteuid|setuid|setresuid|setgid|setegid|execvp|setgroups|setfsuid|setfsgid|setresgid|setresuid|pwrite|pread)'" => "implicit-fortify-decl",
+    "warning:.*implicit [^\']*'(recv|recvfrom|read|pread|pread64|readlink|getwd|getcwd|fgets|fgets_unlock|strncat|strcat|memmove|memcpy|mempcpy|memcmp|strpcpy|strcpy|strchr|strncpy|printf|sprintf|snprintf|vprintf|vsprintf|vsnprintf|fprintf|vfprintf|gets|memset|bzero|bcopy|strlen|strcmp|wcscpy|wcpcpy|wcsncpy|wcpncpy|wcscat|swprintf|vswprintf|fgetws|wcsrtombs|mbsrtowcs|wcrtomb|wcsnrtombs|ptsname|realpath|wctomb|mbstowcs|ttyname_r|getlogin_r|getgroups|confstr|gethostname|getdomainname|puts|seteuid|setuid|setresuid|setgid|setegid|execvp|setgroups|setfsuid|setfsgid|setresgid|setresuid|pwrite|pread)'" => "implicit-fortify-decl",
     'warning:.*memset used with constant zero length parameter' => "memset-with-zero-length",
     'warning:.*comparison with string literal' => "stringcompare",
     "warning:.*'return' with no value, in function returning non-void" => "voidreturn",
     'warning:.*array subscript is (below|above) array bounds' => "arraysubscript",
-    "warning:.*implicit .*'(time|unlink|isspace|qsort|finite|abs|wait3|iswprint|toupper|tolower|fileno|ftruncate|fchmod|wcwidth|isalnum|isspace|utime|access|mkdir|fputchar|close|atoi|free|geteuid|getuid|getresgid|getresuid|getopt|getpgid|srand48|initgroups|rand|ctime|putenv|fork|open|dup|pipe|ioctl|mkstemp|dirname|basename|isdigit|inet_addr|asprintf|getsid|realloc|wait|gettext|write|isatty|tputs|strtol|strtod|spawn|vfork|kill|clearenv|strerror|strdup|strcmp|openpty|ntohl|iopl|outl|gettimeofday|malloc|strncmp|printf|flock|abort|fclose|fabs|cos|inet_aton|atoi|strstr|sin|system|waitpid|dup2|lseek|strlcat|shutdown|calloc|sigset|rename|chdir|strcasecmp|strlcpy)'" => "implicit-pointer-decl"
+    "warning:.*implicit [^\']*'(time|unlink|isspace|qsort|finite|abs|wait3|iswprint|toupper|tolower|fileno|ftruncate|fchmod|wcwidth|isalnum|isspace|utime|access|mkdir|fputchar|close|atoi|free|geteuid|getuid|getresgid|getresuid|getopt|getpgid|srand48|initgroups|rand|ctime|putenv|fork|open|dup|pipe|ioctl|mkstemp|dirname|basename|isdigit|inet_addr|asprintf|getsid|realloc|wait|gettext|write|isatty|tputs|strtol|strtod|spawn|vfork|kill|clearenv|strerror|strdup|strcmp|openpty|ntohl|iopl|outl|gettimeofday|malloc|strncmp|printf|flock|abort|fclose|fabs|cos|inet_aton|atoi|strstr|sin|system|waitpid|dup2|lseek|strlcat|shutdown|calloc|sigset|rename|chdir|strcasecmp|strlcpy)'" => "implicit-pointer-decl"
 );
 
 my %warn_desc = (
@@ -132,7 +132,7 @@ sub add_warning($$)
         ? length($warnings{$warntype}{$filename}) : 0;
 
     if($len > 0) {
-        $warnings{$warntype}{$filename} .= ", $linenum" 
+        $warnings{$warntype}{$filename} .= ", $linenum"
         if ($warnings{$warntype}{$filename} !~ /\Q$linenum\E/);
     } else {
         $warnings{$warntype}{$filename} = $linenum;
