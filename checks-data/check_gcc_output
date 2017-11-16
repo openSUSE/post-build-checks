@@ -217,7 +217,7 @@ while (<>) {
 
     # Detect if we are compiling and if the program uses RPM_OPT_FLAGS.
     my $iscompilerline = 0;
-    if (/^(|.*[\s;\/]+)(gcc|cc|g\+\+) .*/i) {
+    if (/^(|.*[\s;\/]+)(gcc|cc|c\+\+|g\+\+) .*/i) {
         # avoid make dep lines...
         $iscompilerline = 1 if (! /(-E|-MD|-MM|-shared|gccmakedep)/);
         $iscompilerline = 1 if (/(-MD|-MM)/ && /\.o /); # -MD or -MM and object output
