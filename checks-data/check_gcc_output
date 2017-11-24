@@ -164,6 +164,8 @@ my $warn_monster;
 sub analyze_for_warning($)
 {
     my ($line) = @_;
+    $line =~ s/\e\[[\d;]*[a-zA-Z]//g;
+
     # inlined from 'void log_status_write(UPSINFO*, char*, ...)' at reports.c:110
     $inline_location = $line if ($line =~ /^\s+inlined from .* at/);
     if ($line =~ /$warn_monster/o) {
@@ -188,7 +190,7 @@ sub sanity_check()
         die "warntype is not descriptive: $w"
             if (length($w) < 8);
     }
-    $warn_monster = "(?:" . join('|', keys %warn_checks) . ")";
+    $warn_monster = "(?:" . join('|', sort keys %warn_checks) . ")";
 }
 
 &sanity_check();
