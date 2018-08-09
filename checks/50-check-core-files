@@ -1,0 +1,13 @@
+#!/bin/bash
+# Checking for crashed programs
+# This is currently just a warning, but should become an error
+#
+
+if [ -d $BUILD_ROOT/.build/cores ]; then
+
+  echo "... checking for core files"
+  find $BUILD_ROOT/.build/cores -type f
+
+fi
+
+exit 0
