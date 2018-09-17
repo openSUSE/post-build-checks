@@ -226,9 +226,9 @@ while (<>) {
     }
     # libtool needs some special love.
     $iscompilerline = 1 if (/libtool.*--mode=compile.*(gcc|cc|g\+\+)/i);
-    # If a line has -fmessage-length in it assume it uses RPM_OPT_FLAGS.
+    # If a line has -fstack-clash-protection in it assume it uses RPM_OPT_FLAGS.
     # If you avoid this check by adding -fml, we will hack your hands off.
-    if ($iscompilerline && ! /-fmessage-length/ && /\.c/i) {
+    if ($iscompilerline && ! /-fstack-clash-protection/ && /\.c/i) {
         # split away "foo.c" or foo.c; or similar too.
         foreach my $f(grep(/\.c(pp|c)?$/,split(/[ "';`]/))) {
             &add_warning("no-rpm-opt-flags", "<cmdline>:$f");
