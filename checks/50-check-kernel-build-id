@@ -39,7 +39,6 @@ cpioflags="-icd --quiet"
 have_debugi=1
 image_name=""
 vmlinux_compression_suffix=""
-karchs="i586 x86_64 ppc64le s390x aarch64"
 warnonly=0
 
 # only check for these flavors
@@ -58,10 +57,10 @@ have_debugi=${BUILD_DEBUG}
 
 # look for which arch was built, since this is kernel specific, there are
 # no biarch issues
-amatch=0
+karchs="i586 x86_64 ppc64le s390x aarch64"
+rpm_prov_arch=""
 for arch in ${karchs}; do
 	if [ -d ${TOPDIR}/RPMS/${arch} ] ;then
-		amatch=1
 		case ${arch} in
 			"x86_64")  rpm_prov_arch="x86-64";
 				   vmlinux_compression_suffix=".gz"
@@ -78,13 +77,13 @@ for arch in ${karchs}; do
 				   vmlinux_compression_suffix=".gz"
 				   #has Image but not ELF
 				   ;;
-			*) rpm_prov_arch="";;
+			*) err "karchs does not match case statement, please fixme!" ;;
 		esac
 		break
 	fi
 done
 
-[ ${amatch} -eq 0 ] && { warn "No valid build arch in ${TOPDIR}/RPMS"; exit 0; }
+[ -n "${rpm_prov_arch}" ] || { warn "No valid build arch in ${TOPDIR}/RPMS"; exit 0; }
 
 ! have_image && ! have_debuginfo  && { warn "No BuildID consistency to verify (debuginfo disabled and arch has no kernel image fmt)"; exit 0; }
 
