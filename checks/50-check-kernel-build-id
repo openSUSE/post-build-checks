@@ -39,7 +39,7 @@ cpioflags="-icd --quiet"
 have_debugi=1
 image_name=""
 vmlinux_compression_suffix=""
-karchs="x86_64 ppc64le s390x aarch64"
+karchs="i586 x86_64 ppc64le s390x aarch64"
 warnonly=0
 
 # only check for these flavors
@@ -84,7 +84,7 @@ for arch in ${karchs}; do
 	fi
 done
 
-[ ${amatch} -eq 0 ] && err "Unable to find build arch in ${TOPDIR}/RPMS"
+[ ${amatch} -eq 0 ] && { warn "No valid build arch in ${TOPDIR}/RPMS"; exit 0; }
 
 ! have_image && ! have_debuginfo  && { warn "No BuildID consistency to verify (debuginfo disabled and arch has no kernel image fmt)"; exit 0; }
 
