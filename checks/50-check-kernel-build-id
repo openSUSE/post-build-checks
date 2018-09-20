@@ -11,7 +11,7 @@
 
 trap '[ -d "${_tmpdir}" ] && rm -rf ${_tmpdir}' EXIT
 function warn() { echo "... $*" >&2; }
-function err() { warn $*; exit 1; }
+function err() { warn $*; echo "Giving up" >&2 ; exit 0; }
 function buildid() { eu-readelf --notes $1 | awk '/Build ID:/ {print $3}'; }
 function have_image { [ -n "${image_name}" ]; }
 function have_debuginfo { [ ${have_debugi} -eq 1 ]; }
