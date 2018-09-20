@@ -92,48 +92,50 @@ rpm -q --quiet elfutils || { warn "Unable to verify BuildID (no elfutils). Add '
 rpms=${TOPDIR}/RPMS/${arch}
 findversion
 
-vmlinux="./boot/vmlinux-${kernversion}-${flavor}${vmlinux_compression_suffix}"
-have_image && image="./boot/${image_name}-${kernversion}-${flavor}"
-vmlinux_dbgi="./usr/lib/debug/boot/vmlinux-${kernversion}-${flavor}.debug"
-
 echo "... Verifying kernel build-ids for ${PNAME} ${kernversion} ${arch}"
 
 echo "... Processing kernel rpms in '${rpms}'"
 
 krpm=${rpms}/${PNAME}-${rpmversion}.${arch}.rpm
-kdbgi_rpm=${rpms}/${PNAME}-debuginfo-${rpmversion}.${arch}.rpm
-
 [ -f ${krpm} ] || err "Unable to find kernel rpm '${krpm}'"
-have_debuginfo && [ ! -f ${kdbgi_rpm} ] && err "Unable to find kernel debuginfo rpm '${kdbgi_rpm}'"
 
 _tmpdir=`mktemp -d`
 [ -d "${_tmpdir}" ] || err "Unable to make tempdir"
 
+vmlinux="./boot/vmlinux-${kernversion}-${flavor}${vmlinux_compression_suffix}"
+image=""
+have_image && image="./boot/${image_name}-${kernversion}-${flavor}"
 rpm2cpio ${krpm} | (cd ${_tmpdir} ; cpio ${cpioflags} ${vmlinux} ${image})
-have_debuginfo && { rpm2cpio ${kdbgi_rpm} | (cd ${_tmpdir} ; cpio ${cpioflags} ${vmlinux_dbgi}); }
 
 [ ! -f ${_tmpdir}/${vmlinux} ] && err "Unable to extract ${vmlinux} from ${krpm}"
-have_image && [ ! -f ${_tmpdir}/${image} ] && err "Unable to extract ${image} from ${krpm}"
-have_debuginfo && [ ! -f ${_tmpdir}/${vmlinux_dbgi} ] && err "Unable to extract ${vmlinux} from ${kdbgi_rpm}"
-
 vmlinux_id=`buildid ${_tmpdir}/${vmlinux}`
-have_image && image_id=`buildid ${_tmpdir}/${image}`
-have_debuginfo && vmlinux_dbgi_id=`buildid ${_tmpdir}/${vmlinux_dbgi}`
 
 mismatch=0
-if have_debuginfo ;then
-	if [ ${vmlinux_id} == "${vmlinux_dbgi_id}" ] ;then
-		echo "... BuildID vmlinux/vmlinux_debuginfo OK - ${vmlinux_id}"
-	else
-		warn "BuildID Mismatch vmlinux=${vmlinux_id} vmlinux_debuginfo=${vmlinux_dbgi_id}" ; mismatch=1
-	fi
-fi
-
 if have_image ;then
+	[ ! -f ${_tmpdir}/${image} ] && err "Unable to extract ${image} from ${krpm}"
+	image_id=`buildid ${_tmpdir}/${image}`
+
 	if [ ${vmlinux_id} == "${image_id}" ] ;then
 		echo "... BuildID vmlinux/${image_name} OK - ${vmlinux_id}"
 	else
 		warn "BuildID Mismatch vmlinux=${vmlinux_id} ${image_name}=${image_id}" ; mismatch=1
+	fi
+fi
+
+if have_debuginfo ;then
+	kdbgi_rpm=${rpms}/${PNAME}-debuginfo-${rpmversion}.${arch}.rpm
+	[ ! -f ${kdbgi_rpm} ] && err "Unable to find kernel debuginfo rpm '${kdbgi_rpm}'"
+
+	vmlinux_dbgi="./usr/lib/debug/boot/vmlinux-${kernversion}-${flavor}.debug"
+	rpm2cpio ${kdbgi_rpm} | (cd ${_tmpdir} ; cpio ${cpioflags} ${vmlinux_dbgi})
+
+	[ ! -f ${_tmpdir}/${vmlinux_dbgi} ] && err "Unable to extract ${vmlinux} from ${kdbgi_rpm}"
+	vmlinux_dbgi_id=`buildid ${_tmpdir}/${vmlinux_dbgi}`
+
+	if [ ${vmlinux_id} == "${vmlinux_dbgi_id}" ] ;then
+		echo "... BuildID vmlinux/vmlinux_debuginfo OK - ${vmlinux_id}"
+	else
+		warn "BuildID Mismatch vmlinux=${vmlinux_id} vmlinux_debuginfo=${vmlinux_dbgi_id}" ; mismatch=1
 	fi
 fi
 
