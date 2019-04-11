@@ -217,13 +217,13 @@ if ($manifest) {
 	  $modes_ghost[$m] = $ff & 0100;
 	}
 	my $f = "$n/$bn";
-	if (exists $files{$f}) {
-	  if (($ff & 0100) != 0) {
+	if (($ff & 0100) != 0) {
+	  if (exists $files{$f}) {
 	    $filesc{$f} ||= [ $files{$f} ];
 	    push @{$filesc{$f}}, "$pkg/$m";
+	  } else {
+	    $files{$f} = "$pkg/$m";
 	  }
-	} else {
-	  $files{$f} = "$pkg/$m";
 	}
       }
     }
