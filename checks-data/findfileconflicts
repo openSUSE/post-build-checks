@@ -218,8 +218,10 @@ if ($manifest) {
 	}
 	my $f = "$n/$bn";
 	if (exists $files{$f}) {
-	  $filesc{$f} ||= [ $files{$f} ];
-	  push @{$filesc{$f}}, "$pkg/$m";
+	  if (($ff & 0100) != 0) {
+	    $filesc{$f} ||= [ $files{$f} ];
+	    push @{$filesc{$f}}, "$pkg/$m";
+	  }
 	} else {
 	  $files{$f} = "$pkg/$m";
 	}
