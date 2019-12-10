@@ -65,9 +65,11 @@ for RPM in `reorder "${RPM_FILE_LIST[@]}"`; do
 	echo "(keeping $PKG because of $N)"
 	continue
     fi
-    # Do not remove libgcc or libstdc++ variants
+    # Do not remove libgcc/libstdc++ variants or rpm/rpm-build/rpm-ndb
     case ${PKG} in
     libgcc*|libstdc++*)
+	;;
+    rpm|rpm-build|rpm-ndb)
 	;;
     *)
 	RPM_ERASE_LIST="$RPM_ERASE_LIST $PKG"
