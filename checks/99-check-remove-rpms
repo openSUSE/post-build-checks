@@ -46,6 +46,8 @@ export YAST_IS_RUNNING="instsys"
 RPM_ERASE_LIST=
 RPM_FILE_LIST=(`find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm"`)
 
+coreutils=`chroot $BUILD_ROOT rpm --qf '%{NAME}\n' -qf /usr/bin/{date,cat,rm,chown}|sort -u`
+
 for RPM in `reorder "${RPM_FILE_LIST[@]}"`; do
     PKG=${RPM##*/}
     PKG=${PKG%-*-*.*.rpm}
@@ -68,6 +70,8 @@ for RPM in `reorder "${RPM_FILE_LIST[@]}"`; do
     # Do not remove libgcc, libstdc++ and libgomp variants
     case ${PKG} in
     libgcc*|libgomp*|libstdc++*)
+	;;
+    $coreutils)
 	;;
     *)
 	RPM_ERASE_LIST="$RPM_ERASE_LIST $PKG"
