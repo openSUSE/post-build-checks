@@ -47,6 +47,8 @@ RPM_ERASE_LIST=
 RPM_FILE_LIST=(`find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm"`)
 
 coreutils=`chroot $BUILD_ROOT rpm --qf '%{NAME}\n' -qf /usr/bin/{date,cat,rm,chown}|sort -u`
+utillinux=`chroot $BUILD_ROOT rpm --qf '%{NAME}\n' -qf /usr/bin/su|sort -u`
+shell=`chroot $BUILD_ROOT rpm --qf '%{NAME}\n' -qf /usr/bin/sh|sort -u`
 
 for RPM in `reorder "${RPM_FILE_LIST[@]}"`; do
     PKG=${RPM##*/}
@@ -71,7 +73,7 @@ for RPM in `reorder "${RPM_FILE_LIST[@]}"`; do
     case ${PKG} in
     libgcc*|libgomp*|libstdc++*)
 	;;
-    $coreutils)
+    $coreutils|$utillinux|$shell)
 	;;
     rpm|rpm-build|rpm-ndb)
 	;;
