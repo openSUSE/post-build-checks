@@ -48,6 +48,9 @@ RPM_FILE_LIST=(`find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm"`)
 
 coreutils=`chroot $BUILD_ROOT rpm --qf '%{NAME}\n' -qf /usr/bin/{date,cat,rm,chown}|sort -u`
 utillinux=`chroot $BUILD_ROOT rpm --qf '%{NAME}\n' -qf /usr/bin/su|sort -u`
+findutils=`chroot $BUILD_ROOT rpm --qf '%{NAME}\n' -qf /usr/bin/find|sort -u`
+gzip=`chroot $BUILD_ROOT rpm --qf '%{NAME}\n' -qf /usr/bin/gzip|sort -u`
+cpio=`chroot $BUILD_ROOT rpm --qf '%{NAME}\n' -qf /usr/bin/cpio|sort -u`
 shell=`chroot $BUILD_ROOT rpm --qf '%{NAME}\n' -qf /usr/bin/sh|sort -u`
 
 for RPM in `reorder "${RPM_FILE_LIST[@]}"`; do
@@ -73,7 +76,7 @@ for RPM in `reorder "${RPM_FILE_LIST[@]}"`; do
     case ${PKG} in
     libgcc*|libgomp*|libstdc++*)
 	;;
-    $coreutils|$utillinux|$shell)
+    $coreutils|$utillinux|$shell|$findutils|$gzip|$cpio)
 	;;
     rpm|rpm-build|rpm-ndb)
 	;;
