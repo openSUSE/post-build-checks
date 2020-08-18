@@ -11,15 +11,17 @@ for i in `find $BUILD_ROOT$TOPDIR/RPMS -name "*.rpm" | sort` ; do
     test -f $i || continue
     NAME=`rpm -qp --qf "%{NAME}" $i`
     test -f $BUILD_ROOT/etc/sysconfig/security || continue
+
+    # see rpm verify output with setting to secure
+    chroot $BUILD_ROOT /usr/bin/chkstat --system --level secure >/dev/null 2>&1
     chroot $BUILD_ROOT rpm -Vp ${i#$BUILD_ROOT} > $BUILD_ROOT/.build_patchrpmcheck1
-    sed -e "s@^PERMISSION_SECURITY\(.*\)secure@PERMISSION_SECURITY\1easy@" \
-	$BUILD_ROOT/etc/sysconfig/security > $BUILD_ROOT/etc/sysconfig/security.tmp
-    mv $BUILD_ROOT/etc/sysconfig/security $BUILD_ROOT/etc/sysconfig/security.bak
-    mv $BUILD_ROOT/etc/sysconfig/security.tmp $BUILD_ROOT/etc/sysconfig/security
-    chroot $BUILD_ROOT /usr/bin/chkstat --system >/dev/null 2>&1
+
+    # see rpm verify output with setting to easy
+    chroot $BUILD_ROOT /usr/bin/chkstat --system --level easy >/dev/null 2>&1
     chroot $BUILD_ROOT rpm -Vp ${i#$BUILD_ROOT} > $BUILD_ROOT/.build_patchrpmcheck2
-    mv $BUILD_ROOT/etc/sysconfig/security.bak $BUILD_ROOT/etc/sysconfig/security
-    chroot $BUILD_ROOT /usr/bin/chkstat --system >/dev/null 2>&1
+
+    # set back to secure as this is the wanted setting
+    chroot $BUILD_ROOT /usr/bin/chkstat --system --level secure >/dev/null 2>&1
     
     if ! cmp -s $BUILD_ROOT/.build_patchrpmcheck1 $BUILD_ROOT/.build_patchrpmcheck2; then
 	echo "--------------------------------------------------------------------"
