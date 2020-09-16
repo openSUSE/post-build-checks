@@ -4,5 +4,6 @@
 if [ -f /etc/sysconfig/clock ] ; then
     sed -i -e "s@^TIMEZONE=.*@TIMEZONE=\"UTC\"@" /etc/sysconfig/clock
 fi
+test -e /usr/sbin/zic || exit 0
 zic -l UTC || true
 
