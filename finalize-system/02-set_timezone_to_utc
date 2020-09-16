@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 
 # set the timezone to UTC
 if [ -f /etc/sysconfig/clock ] ; then

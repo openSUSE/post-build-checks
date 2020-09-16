@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 
 # and add the ugly workaround to override the output of uname -v
 # to match the installed kernel sources

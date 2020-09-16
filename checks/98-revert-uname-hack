@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 
 UNAME=/bin/uname
 if test -f /usr/bin/uname.bin ; then
