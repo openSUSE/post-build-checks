@@ -1,3 +1,15 @@
 #!/bin/sh -x
 
+test "$BUILD_USER" = "root" && exit 0 || true
+
+test -z "$ABUILD_UID" && ABUILD_UID=399
+test -z "$ABUILD_GID" && ABUILD_GID=399
+
+grep -q "^abuild:" /etc/passwd || {
+    echo "abuild:x:${ABUILD_UID}:${ABUILD_GID}:Autobuild:/home/abuild:/bin/bash" >> /etc/passwd
+    echo 'abuild:*:::::::' >> /etc/shadow
+    echo "abuild:x:${ABUILD_GID}:" >> /etc/group
+    echo 'abuild:*::' >> /etc/gshadow
+}
+
 id abuild 2>/dev/null && usermod -G trusted -a abuild || true
