@@ -15,4 +15,4 @@ grep -q "^abuild:" /etc/passwd || {
 
 }
 
-id abuild 2>/dev/null && usermod -G trusted -a abuild || true
+id abuild >/dev/null 2>/dev/null && usermod -G trusted -a abuild || true
