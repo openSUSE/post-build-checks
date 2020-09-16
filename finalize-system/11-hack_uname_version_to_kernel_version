@@ -1,0 +1,13 @@
+#!/bin/sh -x
+
+# and add the ugly workaround to override the output of uname -v
+# to match the installed kernel sources
+UNAME=/bin/uname
+if test -f /usr/bin/uname ; then
+    UNAME=/usr/bin/uname
+fi
+if test -f $UNAME -a ! -L $UNAME ; then
+    mv $UNAME $UNAME.bin
+    ln -s /usr/lib/build/helper/uname.sh $UNAME
+fi
+

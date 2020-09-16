@@ -1,0 +1,8 @@
+#!/bin/sh -x
+
+# set the timezone to UTC
+if [ -f /etc/sysconfig/clock ] ; then
+    sed -i -e "s@^TIMEZONE=.*@TIMEZONE=\"UTC\"@" /etc/sysconfig/clock
+fi
+zic -l UTC || true
+

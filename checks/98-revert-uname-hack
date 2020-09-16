@@ -1,0 +1,16 @@
+#!/bin/sh -x
+
+UNAME=/bin/uname
+if test -f /usr/bin/uname.bin ; then
+    UNAME=/usr/bin/uname
+fi
+
+test -L $UNAME || exit 0
+TARG=$(readlink $UNAME)
+test "$TARG" = "/usr/lib/build/helper/uname.sh" || exit 0
+
+if test -f $UNAME.bin ; then
+    rm -f $UNAME
+    mv $UNAME.bin $UNAME
+fi
+
