@@ -10,6 +10,9 @@ grep -q "^abuild:" /etc/passwd || {
     echo 'abuild:*:::::::' >> /etc/shadow
     echo "abuild:x:${ABUILD_GID}:" >> /etc/group
     echo 'abuild:*::' >> /etc/gshadow
+    mkdir -p /home/abuild
+    chown "$ABUILD_UID:$ABUILD_GID" /home/abuild
+
 }
 
 id abuild 2>/dev/null && usermod -G trusted -a abuild || true
