@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 
 test "$BUILD_USER" = "root" && exit 0 || true
 
