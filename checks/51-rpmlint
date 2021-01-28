@@ -1,0 +1,20 @@
+#!/bin/bash
+
+TOPDIR=/usr/src/packages
+test -d $BUILD_ROOT/.build.packages && TOPDIR=/.build.packages
+
+RPMLINT_CHROOT="$BUILD_ROOT/usr/lib/rpmlint-image"
+WORKDIR=$RPMLINT_CHROOT/RPM
+
+mount --bind $BUILD_ROOT$TOPDIR $WORKDIR
+
+RPMLINTRC_OPTION=$(ls $WORKDIR/SOURCES | grep rpmlintrc | sed "s,$WORKDIR,,")
+if ! [ -z "$RPMLINTRC_OPTION" ] ; then
+  RPMLINTRC_OPTION="-r /RPM/SOURCES/$RPMLINTRC_OPTION"
+fi
+RPM_FILES=$(find $RPMLINT_CHROOT -type f -name '*.rpm' | sed "s,$RPMLINT_CHROOT,,")
+
+set -o pipefail
+chroot $RPMLINT_CHROOT /usr/bin/rpmlint --info --permissive $RPMLINTRC_OPTION $RPM_FILES > >(tee $BUILD_ROOT$TOPDIR/OTHER/rpmlint.log) 2>&1
+
+umount $RPMLINT_CHROOT/RPM
