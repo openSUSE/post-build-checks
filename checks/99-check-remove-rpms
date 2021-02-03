@@ -78,6 +78,8 @@ for RPM in `reorder "${RPM_FILE_LIST[@]}"`; do
 	;;
     $coreutils|$utillinux|$shell|$findutils|$gzip|$cpio)
 	;;
+    bash-legacybin*|glibc-legacylib*)
+	;;
     rpm|rpm-build|rpm-ndb)
 	;;
     *)

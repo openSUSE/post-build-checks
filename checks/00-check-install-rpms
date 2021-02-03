@@ -4,14 +4,18 @@ echo "... installing all built rpms"
 TOPDIR=/usr/src/packages
 test -d $BUILD_ROOT/.build.packages && TOPDIR=/.build.packages
 export YAST_IS_RUNNING="instsys"
-RPM_FILE_LIST=(`find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm"`)
-for rpm in $RPM_FILE_LIST ; do
+for rpm in `find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm"`; do
   case ${rpm##*/} in
     rpm-ndb-*) 
       echo "converting rpm database to ndb"
       chroot $BUILD_ROOT rpmdb --define '_db_backend ndb' --rebuilddb
       ;;
+    bash-legacybin-*|glibc-legacylib-*)
+      # skip those packages in case usrmerged system
+      [ ! -L $BUILD_ROOT/bin ] || continue
+      ;;
   esac
+  RPM_FILE_LIST+=("$rpm")
 done
 
 ADDITIONAL_PARAMS=
