@@ -80,6 +80,8 @@ for RPM in `reorder "${RPM_FILE_LIST[@]}"`; do
 	;;
     bash-legacybin*|glibc-legacylib*)
 	;;
+    pam_unix*)
+	;;
     rpm|rpm-build|rpm-ndb)
 	;;
     *)
