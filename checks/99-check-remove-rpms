@@ -40,6 +40,12 @@ function reorder {
 #make sure it is mounted
 test -d $BUILD_ROOT/proc/sys || { echo "proc is not mounted"; exit 1; }
 
+test -e $BUILD_ROOT/skipped-install-cross && {
+    echo 'skipping removal of rpms, install was skipped'
+    rm -f $BUILD_ROOT/skipped-install-cross
+    exit 0
+}
+
 # test package removal
 echo "... removing all built rpms"
 export YAST_IS_RUNNING="instsys"

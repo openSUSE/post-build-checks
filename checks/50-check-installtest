@@ -1,5 +1,10 @@
 #!/bin/bash
 
+test -e $BUILD_ROOT/skipped-install-cross && {
+    echo 'skipping pre/post install checks, install was skipped'
+    exit 0
+}
+
 echo "... testing for pre/postinstall scripts that are not idempotent"
 TOPDIR=/usr/src/packages
 test -d $BUILD_ROOT/.build.packages && TOPDIR=/.build.packages
