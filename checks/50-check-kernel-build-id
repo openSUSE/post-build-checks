@@ -57,37 +57,41 @@ have_debugi=${BUILD_DEBUG}
 
 # look for which arch was built, since this is kernel specific, there are
 # no biarch issues
-karchs="i586 i686 x86_64 ppc ppc64 ppc64le s390 s390x armv6l armv7l aarch64"
+karchs="i586 i686 x86_64 ppc ppc64 ppc64le s390 s390x armv6l armv7l aarch64 riscv64"
 rpm_prov_arch=""
 for arch in ${karchs}; do
 	if [ -d ${TOPDIR}/RPMS/${arch} ] ;then
 		case ${arch} in
 			"i586"|"i686")    rpm_prov_arch="x86-32"
-				   vmlinux_compression_suffix=".gz"
+				   vmlinux_compression_suffix=".xz"
 				   image_name="vmlinuz";;
 			"x86_64")  rpm_prov_arch="x86-64";
-				   vmlinux_compression_suffix=".gz"
+				   vmlinux_compression_suffix=".xz"
 				   image_name="vmlinuz";;
 			"ppc")     rpm_prov_arch="ppc-32";;
 			"ppc64"|"ppc64le")   rpm_prov_arch="ppc-64";;
 			"s390")    rpm_prov_arch="s390-32"
-				   vmlinux_compression_suffix=".gz"
+				   vmlinux_compression_suffix=".xz"
 				   #has Image but not ELF
 				   ;;
 			"s390x")   rpm_prov_arch="s390-64"
-				   vmlinux_compression_suffix=".gz"
+				   vmlinux_compression_suffix=".xz"
 				   #has Image but not ELF
 				   ;;
 			"armv6l") rpm_prov_arch="armv6hl-32"
-				   vmlinux_compression_suffix=".gz"
+				   vmlinux_compression_suffix=".xz"
 				   #has Image but not ELF
 				   ;;
 			"armv7l") rpm_prov_arch="armv7hl-32"
-				   vmlinux_compression_suffix=".gz"
+				   vmlinux_compression_suffix=".xz"
 				   #has Image but not ELF
 				   ;;
 			"aarch64") rpm_prov_arch="aarch-64"
-				   vmlinux_compression_suffix=".gz"
+				   vmlinux_compression_suffix=".xz"
+				   #has Image but not ELF
+				   ;;
+			"riscv64") rpm_prov_arch="riscv-64"
+				   vmlinux_compression_suffix=".xz"
 				   #has Image but not ELF
 				   ;;
 			*) err "karchs does not match case statement, please fixme!" ;;
