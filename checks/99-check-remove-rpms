@@ -20,9 +20,9 @@ function reorder {
         chroot $BUILD_ROOT bash -c "cd ${RPMCACHEDIR#$BUILD_ROOT} && rpm -Uvv --force --nodeps --test $REORDER_HAVE" 2>&1 | sed -n -e 's/-[^- ]*-[^- ]* / /' -e 's/^D: package: \([^ ]*\) .*/\1/p' > $BUILD_ROOT/.reorder/.list
     fi
     REORDER_HAVE=
-    for PKG in `cat $BUILD_ROOT/.reorder/.list`; do
+    for PKG in $(<$BUILD_ROOT/.reorder/.list); do
         test -e $BUILD_ROOT/.reorder/$PKG || continue
-        REORDER_HAVE="$REORDER_HAVE `cat $BUILD_ROOT/.reorder/$PKG`"
+        REORDER_HAVE="$REORDER_HAVE $(<$BUILD_ROOT/.reorder/$PKG)"
         rm $BUILD_ROOT/.reorder/$PKG
     done
     for RPM in "$@" ; do
@@ -35,7 +35,7 @@ function reorder {
         rm $BUILD_ROOT/.reorder/$PKG
     done
     echo $REORDER_HAVE
-} 
+}
 
 #make sure it is mounted
 test -d $BUILD_ROOT/proc/sys || { echo "proc is not mounted"; exit 1; }
