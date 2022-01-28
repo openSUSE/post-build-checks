@@ -19,19 +19,10 @@ for rpm in `find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm"`; do
 done
 
 ADDITIONAL_PARAMS=
-SKIP_INSTALL=
 test "$ABUILD_INIT_WITH_IGNORE_ARCH" = true && ADDITIONAL_PARAMS="$ADDITIONAL_PARAMS --ignorearch"
 
-SARCH=$(rpm -q --qf "%{ARCH}\n" aaa_base)
-for pack in $RPM_FILE_LIST ; do
-  TARCH=$(rpm -qp --qf "%{ARCH}" $pack)
-  test "$SARCH" != "$TARCH" && test "$TARCH" != "noarch" && {
-    SKIP_INSTALL=$TARCH
-  }
-done
-
-test -n "$SKIP_INSTALL" && {
-  echo "skipping installation of $SKIP_INSTALL rpms on $SARCH"
+test -n "$(rpm --eval '%{?cross_sysroot}')" && {
+  echo "skipping installation due to cross_sysroot being set."
   touch $BUILD_ROOT/skipped-install-cross
   exit 0
 }
