@@ -3,36 +3,34 @@
 echo "... testing for modified permissions"
 TOPDIR=/usr/src/packages
 test -d $BUILD_ROOT/.build.packages && TOPDIR=/.build.packages
+test -f $BUILD_ROOT/etc/sysconfig/security || exit 0
 
-SCRIPT_ARG=-e
 HAD_ERRORS=0
 
-for i in `find $BUILD_ROOT$TOPDIR/RPMS -name "*.rpm" | sort` ; do
-    test -f $i || continue
-    NAME=`rpm -qp --qf "%{NAME}" $i`
-    test -f $BUILD_ROOT/etc/sysconfig/security || continue
-    chroot $BUILD_ROOT rpm -Vp ${i#$BUILD_ROOT} > $BUILD_ROOT/.build_patchrpmcheck1
-    sed -e "s@^PERMISSION_SECURITY\(.*\)secure@PERMISSION_SECURITY\1easy@" \
-	$BUILD_ROOT/etc/sysconfig/security > $BUILD_ROOT/etc/sysconfig/security.tmp
-    mv $BUILD_ROOT/etc/sysconfig/security $BUILD_ROOT/etc/sysconfig/security.bak
-    mv $BUILD_ROOT/etc/sysconfig/security.tmp $BUILD_ROOT/etc/sysconfig/security
+RPM="chroot $BUILD_ROOT rpm --nodigest --nosignature -Vp --nofiledigest --nodeps"
+
+for i in $(find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm" | sort) ; do
+    $RPM ${i#$BUILD_ROOT} > $BUILD_ROOT/.build_rpmVp_old
+    sed -i.bak -e "s@^PERMISSION_SECURITY\(.*\)secure@PERMISSION_SECURITY\1easy@" \
+	    $BUILD_ROOT/etc/sysconfig/security
     chroot $BUILD_ROOT /usr/bin/chkstat --system >/dev/null 2>&1
-    chroot $BUILD_ROOT rpm -Vp ${i#$BUILD_ROOT} > $BUILD_ROOT/.build_patchrpmcheck2
+    $RPM ${i#$BUILD_ROOT} > $BUILD_ROOT/.build_rpmVp_new
     mv $BUILD_ROOT/etc/sysconfig/security.bak $BUILD_ROOT/etc/sysconfig/security
     chroot $BUILD_ROOT /usr/bin/chkstat --system >/dev/null 2>&1
-    
-    if ! cmp -s $BUILD_ROOT/.build_patchrpmcheck1 $BUILD_ROOT/.build_patchrpmcheck2; then
+
+    if ! cmp -s $BUILD_ROOT/.build_rpmVp_old $BUILD_ROOT/.build_rpmVp_new; then
 	echo "--------------------------------------------------------------------"
-	echo "package: $NAME"
+	echo "package: $(rpm --nodigest --nosignature -qp --qf '%{NAME}' \"$i\")"
 	echo "/usr/bin/chkstat modified files that are not properly handled!"
 	echo "this will break rpm -V, ask ro for details."
 	echo "diff for both runs of rpm -V:"
-	diff -u $BUILD_ROOT/.build_patchrpmcheck1 $BUILD_ROOT/.build_patchrpmcheck2 | tail -n+4 | grep -v '^ '
+	diff -u0 "$BUILD_ROOT/.build_rpmVp_old" "$BUILD_ROOT/.build_rpmVp_new"
 	echo "--------------------------------------------------------------------"
 	HAD_ERRORS=1
     fi
-    rm -f $BUILD_ROOT/.build_patchrpmcheck1 $BUILD_ROOT/.build_patchrpmcheck2
 done
+
+rm -f $BUILD_ROOT/.build_rpmVp_old $BUILD_ROOT/.build_rpmVp_new
 
 if test "$HAD_ERRORS" = 1 ; then
 	touch $BUILD_ROOT/not-ready
