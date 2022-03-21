@@ -1,9 +1,11 @@
 #!/bin/bash
 # search for invalid requires.
 #
-export UNVALID_FILE_FOUND=false
+export INVALID_FILE_FOUND=false
 TOPDIR=/usr/src/packages
 test -d $BUILD_ROOT/.build.packages && TOPDIR=/.build.packages
+
+RPM="chroot $BUILD_ROOT rpm --nodigest --nosignature"
 
 FORBIDDEN_REQ=`find $BUILD_ROOT$TOPDIR/RPMS -name "*.rpm" | \
     xargs --no-run-if-empty rpm -qp --requires| \
@@ -15,21 +17,20 @@ for LINE in $FORBIDDEN_REQ; do
             ;;
           *)
             echo \""$LINE"\" is not allowed as Requires.
-            UNVALID_FILE_FOUND=true
+            INVALID_FILE_FOUND=true
           ;;
         esac
 done
 
-RPMLIST=`find $BUILD_ROOT$TOPDIR/RPMS -name "*.rpm"`
-for pack in $RPMLIST ; do
+for pack in $(find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm") ; do
 	case $pack in
 		*-debuginfo-*|*-debugsource-*)
 			N=`rpm -qp --qf "%{NAME}" $pack`
 			echo "dependency check for "`basename $pack`":"
-			for i in `chroot $BUILD_ROOT rpm -qp --qf "[%{REQUIRENAME}\n]" ${pack##$BUILD_ROOT}` ; do
+			for i in $($RPM -qp --qf "[%{REQUIRENAME}\n]" ${pack##$BUILD_ROOT}) ; do
 			    case $i in
 				rpmlib*|*-debuginfo|*-debugsource) ;;
-				*) chroot $BUILD_ROOT rpm -q --whatprovides $i || UNVALID_FILE_FOUND=true
+				*) chroot $BUILD_ROOT rpm -q --whatprovides $i || INVALID_FILE_FOUND=true
 				   ;;
 			    esac
 			done
@@ -37,6 +38,6 @@ for pack in $RPMLIST ; do
 		*) ;;
 	esac
 done
-test $UNVALID_FILE_FOUND = true && exit 1
+test $INVALID_FILE_FOUND = true && exit 1
 
 exit 0
