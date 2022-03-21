@@ -7,8 +7,8 @@ test -f $BUILD_ROOT/etc/sysconfig/security || exit 0
 
 HAD_ERRORS=0
 
-grep -q "easy local" $BUILD_ROOT/etc/sysconfig/security || {
-    echo "ERROR: expected permission level to be set to easy ?!"
+grep -q "secure local" $BUILD_ROOT/etc/sysconfig/security || {
+    echo "ERROR: expected permission level to be set to secure ?!"
     HAD_ERRORS=1
 }
 
@@ -19,7 +19,7 @@ for i in $(find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm" | sort) ; do
         *-debuginfo-*|*-debugsource-*) continue ;;
     esac
     $RPM ${i#$BUILD_ROOT} > $BUILD_ROOT/.build_rpmVp_orig
-    sed -i.bak -e "s@^PERMISSION_SECURITY\(.*\)@PERMISSION_SECURITY = \"secure local\"@" \
+    sed -i.bak -e "s@^PERMISSION_SECURITY\(.*\)@PERMISSION_SECURITY = \"easy local\"@" \
            $BUILD_ROOT/etc/sysconfig/security
     chroot $BUILD_ROOT /usr/bin/chkstat --set --system >/dev/null 2>&1
     $RPM ${i#$BUILD_ROOT} > $BUILD_ROOT/.build_rpmVp_secure
