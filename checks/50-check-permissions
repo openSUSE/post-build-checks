@@ -22,19 +22,19 @@ for i in $(find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm" | sort) ; do
     sed -i.bak -e "s@^PERMISSION_SECURITY\(.*\)@PERMISSION_SECURITY = \"easy local\"@" \
            $BUILD_ROOT/etc/sysconfig/security
     chroot $BUILD_ROOT /usr/bin/chkstat --set --system >/dev/null 2>&1
-    $RPM ${i#$BUILD_ROOT} > $BUILD_ROOT/.build_rpmVp_secure
+    $RPM ${i#$BUILD_ROOT} > $BUILD_ROOT/.build_rpmVp_easy
     sed -i -e "s@^PERMISSION_SECURITY\(.*\)@PERMISSION_SECURITY = \"paranoid local\"@" \
            $BUILD_ROOT/etc/sysconfig/security
     chroot $BUILD_ROOT /usr/bin/chkstat --set --system >/dev/null 2>&1
     $RPM ${i#$BUILD_ROOT} > $BUILD_ROOT/.build_rpmVp_paranoid
     mv $BUILD_ROOT/etc/sysconfig/security.bak $BUILD_ROOT/etc/sysconfig/security
     chroot $BUILD_ROOT /usr/bin/chkstat --set --system >/dev/null 2>&1
-    if ! cmp -s $BUILD_ROOT/.build_rpmVp_orig $BUILD_ROOT/.build_rpmVp_secure; then
+    if ! cmp -s $BUILD_ROOT/.build_rpmVp_orig $BUILD_ROOT/.build_rpmVp_easy; then
 	echo "--------------------------------------------------------------------"
 	echo "ERROR: chkstat --level secure modified package $(rpm --nodigest --nosignature -qp --qf '%{NAME}' \"$i\")"
 	echo "Please add '%verify(not mode,...) for those to avoid listings in rpm -V."
 	echo "diff for both runs of rpm -V:"
-	diff -u0 "$BUILD_ROOT/.build_rpmVp_orig" "$BUILD_ROOT/.build_rpmVp_secure"
+	diff -u0 "$BUILD_ROOT/.build_rpmVp_orig" "$BUILD_ROOT/.build_rpmVp_easy"
 	echo "--------------------------------------------------------------------"
 	HAD_ERRORS=1
     fi
