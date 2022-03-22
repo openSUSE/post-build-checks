@@ -2,5 +2,5 @@
 
 test "$BUILD_USER" = "root" && exit 0 || true
 
-sed -i -e "s@^PERMISSION_SECURITY\(.*\)@PERMISSION_SECURITY = \"secure local\"@" \
+sed -i -e "s@^PERMISSION_SECURITY\(.*\)@PERMISSION_SECURITY=\"secure local\"@" \
  /etc/sysconfig/security
