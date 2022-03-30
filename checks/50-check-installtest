@@ -18,48 +18,53 @@ test -d $BUILD_ROOT/proc/sys || { echo "proc is not mounted"; exit 1; }
 
 export YAST_IS_RUNNING="instsys"
 for i in $(find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm" | sort) ; do
-    pre_p=$($RPM -qp --qf '%{PREINPROG}' ${i#$BUILD_ROOT})
-    post_p=$($RPM -qp --qf '%{POSTINPROG}' ${i#$BUILD_ROOT})
-    preun_p=$($RPM -qp --qf '%{PREUNPROG}' ${i#$BUILD_ROOT})
-    postun_p=$($RPM -qp --qf '%{POSTUNPROG}' ${i#$BUILD_ROOT})
-    pre=$($RPM -qp --qf '%{PREIN}' ${i#$BUILD_ROOT})
-    post=$($RPM -qp --qf '%{POSTIN}' ${i#$BUILD_ROOT})
-    preun=$($RPM -qp --qf '%{PREUN}' ${i#$BUILD_ROOT})
-    postun=$($RPM -qp --qf '%{POSTUN}' ${i#$BUILD_ROOT})
-    test "$pre" = "(none)" -a "$post" = "(none)" -a "$preun" = "(none)" -a "$postun" = "(none)" && continue
+    set -- $($RPM --macros=/dev/null -qp --qf '%{PREINPROG} %{POSTINPROG} %{PREUNPROG} %{POSTUNPROG}' ${i#$BUILD_ROOT})
+    pre_p="$1"
+    post_p="$2"
+    preun_p="$3"
+    postun_p="$4"
+    test "$pre_p" = "(none)" -a "$post_p" = "(none)" -a "$preun_p" = "(none)" -a "$postun_p" = "(none)" && continue
 
     $RPM -Vp --nodeps ${i#$BUILD_ROOT} > $BUILD_ROOT/.build_patchrpmcheck1
-    if test "$pre" != "(none)" -a "$pre_p" != "<lua>" ; then
-	echo "$pre" > $BUILD_ROOT/.build_patchrpmcheck_scr
-	chroot $BUILD_ROOT sh $SCRIPT_ARG /.build_patchrpmcheck_scr 2 || {
-	    echo "preinstall script of ${i##*/} failed"
-	    touch $BUILD_ROOT/not-ready
-	    exit 1
-	}
+    if test "${pre_p: -2}" = "sh" ; then
+        $RPM --macros=/dev/null -qp --qf '%{PREIN}' ${i#$BUILD_ROOT} > $BUILD_ROOT/.build_patchrpmcheck_scr
+	if test "$(<$BUILD_ROOT/.build_patchrpmcheck_scr)" != "(none)" ; then
+            if !  chroot $BUILD_ROOT ${pre_p} $SCRIPT_ARG /.build_patchrpmcheck_scr 2 ; then
+                echo "preinstall script of ${i##*/} failed"
+                touch $BUILD_ROOT/not-ready
+                exit 1
+            fi
+        fi
     fi
-    if test "$post" != "(none)" -a "$post_p" != "<lua>" ; then
-	echo "$post" > $BUILD_ROOT/.build_patchrpmcheck_scr
-	chroot $BUILD_ROOT sh $SCRIPT_ARG /.build_patchrpmcheck_scr 2 || {
-	    echo "postinstall script of ${i##*/} failed"
-	    touch $BUILD_ROOT/not-ready
-	    exit 1
-	}
+    if test "${post_p: -2}" = "sh" ; then
+        $RPM --macros=/dev/null -qp --qf '%{POSTIN}' ${i#$BUILD_ROOT} > $BUILD_ROOT/.build_patchrpmcheck_scr
+	if test "$(<$BUILD_ROOT/.build_patchrpmcheck_scr)" != "(none)" ; then
+            if ! chroot $BUILD_ROOT ${post_p} $SCRIPT_ARG /.build_patchrpmcheck_scr 2 ; then
+                echo "postinstall script of ${i##*/} failed"
+                touch $BUILD_ROOT/not-ready
+                exit 1
+            fi
+        fi
     fi
-    if test "$preun" != "(none)" -a "$preun_p" != "<lua>" ; then
-	echo "$preun" > $BUILD_ROOT/.build_patchrpmcheck_scr
-	chroot $BUILD_ROOT sh $SCRIPT_ARG /.build_patchrpmcheck_scr 1 || {
-	    echo "preuninstall script of ${i##*/} failed"
-	    touch $BUILD_ROOT/not-ready
-	    exit 1
-	}
+    if test "${preun_p: -2}" = "sh" ; then
+        $RPM --macros=/dev/null -qp --qf '%{PREUN}' ${i#$BUILD_ROOT} > $BUILD_ROOT/.build_patchrpmcheck_scr
+	if test "$(<$BUILD_ROOT/.build_patchrpmcheck_scr)" != "(none)" ; then
+            if ! chroot $BUILD_ROOT ${preun_p} $SCRIPT_ARG /.build_patchrpmcheck_scr 1 ; then
+                echo "preuninstall script of ${i##*/} failed"
+                touch $BUILD_ROOT/not-ready
+                exit 1
+            fi
+        fi
     fi
-    if test "$postun" != "(none)" -a "$postun_p" != "<lua>" ; then
-	echo "$postun" > $BUILD_ROOT/.build_patchrpmcheck_scr
-	chroot $BUILD_ROOT sh $SCRIPT_ARG /.build_patchrpmcheck_scr 1 || {
-	    echo "postuninstall script of ${i##*/} failed"
-	    touch $BUILD_ROOT/not-ready
-	    exit 1
-	}
+    if test "${postun_p: -2}" = "sh" ; then
+        $RPM --macros=/dev/null -qp --qf '%{POSTUN}' ${i#$BUILD_ROOT} > $BUILD_ROOT/.build_patchrpmcheck_scr
+	if test "$(<$BUILD_ROOT/.build_patchrpmcheck_scr)" != "(none)" ; then
+            if ! chroot $BUILD_ROOT ${postun_p} $SCRIPT_ARG /.build_patchrpmcheck_scr 1 ; then
+                echo "postuninstall script of ${i##*/} failed"
+                touch $BUILD_ROOT/not-ready
+                exit 1
+            fi
+        fi
     fi
     $RPM -Vp --nodeps ${i#$BUILD_ROOT} > $BUILD_ROOT/.build_patchrpmcheck2
     if ! cmp -s $BUILD_ROOT/.build_patchrpmcheck1 $BUILD_ROOT/.build_patchrpmcheck2; then
