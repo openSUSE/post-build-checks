@@ -10,15 +10,11 @@ export INVALID_FILE_FOUND=false
 INITD_DATA=$BUILD_ROOT/usr/lib/build/checks-data/initd.txt
 CRON_DATA=$BUILD_ROOT/usr/lib/build/checks-data/cron.txt
 
+RPM="chroot $BUILD_ROOT env LC_ALL=C rpm --macros=/dev/null --nodigest --nosignature"
 
-ALL_RPMS=`find $BUILD_ROOT$TOPDIR/RPMS -name "*.rpm"`
-
-if [ ! -z "$ALL_RPMS" ] ; then
-
-  for RPM in $ALL_RPMS; do
-    RPM_NAME=`rpm -qp --qf "%{NAME}" $RPM`
-    ALL_RPM_LINES=`rpm -qpl $RPM | sed -e "s@ @_@g"`
-    for LINE in $ALL_RPM_LINES; do
+for rpm_package in $(find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm" | LC_ALL=C sort) ; do
+    RPM_NAME=$($RPM -qp --qf "%{NAME}" $rpm_package)
+    $RPM -qpl --nofiledigest $rpm_package | sed -e "s@ @_@g" | while read LINE; do
       case "$LINE" in
           /etc/init.d/*)
 	    SCRIPTNAME=`basename $LINE`
@@ -27,10 +23,9 @@ if [ ! -z "$ALL_RPMS" ] ; then
               novell*)
               ;;
             *)
-              grep ^"$SCRIPTNAME " $INITD_DATA > /dev/null
-              if [ $? -eq 1 ]; then
-                 echo $RPM_NAME: Name of init script \""$SCRIPTNAME"\" is not LSB conform
-                 #INVALID_FILE_FOUND=true
+              if ! grep -q -E ^"$SCRIPTNAME " $INITD_DATA ; then
+                 echo $($RPM -qp --qf "%{NAME}" $rpm_package): Name of init script \""$SCRIPTNAME"\" is not LSB conform
+                 # INVALID_FILE_FOUND=true
               fi
 	      ;;
               esac
@@ -47,10 +42,9 @@ if [ ! -z "$ALL_RPMS" ] ; then
 	      novell*)
 	      ;;
 	    *)
-              grep ^"$SCRIPTNAME\$" $CRON_DATA > /dev/null
-              if [ $? -eq 1 ]; then
-                 echo $RPM_NAME: Name of cron script \""$SCRIPTNAME"\" is not LSB conform
-                 #INVALID_FILE_FOUND=true
+              if ! grep -q -E ^"$SCRIPTNAME\$" $CRON_DATA > /dev/null ; then
+                 echo $($RPM -qp --qf "%{NAME}" $rpm_package): Name of cron script \""$SCRIPTNAME"\" is not LSB conform
+                 # INVALID_FILE_FOUND=true
               fi
             ;;
             esac
@@ -60,8 +54,7 @@ if [ ! -z "$ALL_RPMS" ] ; then
           ;;
         esac
     done
-  done
-fi
+done
 
 test $INVALID_FILE_FOUND = true && exit 1
 
