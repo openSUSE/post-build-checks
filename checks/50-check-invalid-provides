@@ -4,22 +4,22 @@
 TOPDIR=/usr/src/packages
 test -d $BUILD_ROOT/.build.packages && TOPDIR=/.build.packages
 
-export UNVALID_FILE_FOUND=false
+export INVALID_FILE_FOUND=false
 
-for package in `find $BUILD_ROOT$TOPDIR/RPMS -name "*.rpm"` ; do
-  if rpm -qp --provides --nodigest --nosignature $package \
-     | grep -q -E "^$(rpm -qp --nodigest --nosignature --queryformat='%{NAME}' $package)[[:space:]]*$"; then
+RPM="env LC_ALL=C rpm --macros=/dev/null --nodigest --nosignature"
 
+for package in `find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm"` ; do
+  if $RPM -qp --provides $package | grep -q -E "^$($RPM -qp --qf='%{NAME}' $package)[[:space:]]*$"; then
     echo ""
     echo "ERROR: ${package##$BUILD_ROOT}"
     echo "       has an unversioned self-provide. "
     echo "       Remove it, self-provides are done automatically."
     echo "       If you don't understand this error message, contact dmueller@suse.de"
     echo ""
-    UNVALID_FILE_FOUND=true
+    INVALID_FILE_FOUND=true
   fi
 done
 
-test $UNVALID_FILE_FOUND = true && exit 1
+test $INVALID_FILE_FOUND = true && exit 1
 
 exit 0

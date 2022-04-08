@@ -12,7 +12,7 @@ grep -q "secure local" $BUILD_ROOT/etc/sysconfig/security || {
     HAD_ERRORS=1
 }
 
-RPM="chroot $BUILD_ROOT rpm --nodigest --nosignature -Vp --nofiledigest --nodeps"
+RPM="chroot $BUILD_ROOT env LC_ALL=C rpm --nodigest --nosignature -Vp --nofiledigest --nodeps"
 
 for i in $(find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm" | sort) ; do
     case "$pkg" in
