@@ -38,7 +38,6 @@ TOPDIR=/usr/src/packages
 cpioflags="-icd --quiet"
 have_debugi=1
 image_name=""
-vmlinux_compression_suffix=""
 warnonly=0
 
 # only check for these flavors
@@ -63,35 +62,27 @@ for arch in ${karchs}; do
 	if [ -d ${TOPDIR}/RPMS/${arch} ] ;then
 		case ${arch} in
 			"i586"|"i686")    rpm_prov_arch="x86-32"
-				   vmlinux_compression_suffix=".xz"
 				   image_name="vmlinuz";;
 			"x86_64")  rpm_prov_arch="x86-64";
-				   vmlinux_compression_suffix=".xz"
 				   image_name="vmlinuz";;
 			"ppc")     rpm_prov_arch="ppc-32";;
 			"ppc64"|"ppc64le")   rpm_prov_arch="ppc-64";;
 			"s390")    rpm_prov_arch="s390-32"
-				   vmlinux_compression_suffix=".xz"
 				   #has Image but not ELF
 				   ;;
 			"s390x")   rpm_prov_arch="s390-64"
-				   vmlinux_compression_suffix=".xz"
 				   #has Image but not ELF
 				   ;;
 			"armv6l") rpm_prov_arch="armv6hl-32"
-				   vmlinux_compression_suffix=".xz"
 				   #has Image but not ELF
 				   ;;
 			"armv7l") rpm_prov_arch="armv7hl-32"
-				   vmlinux_compression_suffix=".xz"
 				   #has Image but not ELF
 				   ;;
 			"aarch64") rpm_prov_arch="aarch-64"
-				   vmlinux_compression_suffix=".xz"
 				   #has Image but not ELF
 				   ;;
 			"riscv64") rpm_prov_arch="riscv-64"
-				   vmlinux_compression_suffix=".xz"
 				   #has Image but not ELF
 				   ;;
 			*) err "karchs does not match case statement, please fixme!" ;;
@@ -119,10 +110,27 @@ krpm=${rpms}/${PNAME}-${rpmversion}.${arch}.rpm
 _tmpdir=`mktemp -d`
 [ -d "${_tmpdir}" ] || err "Unable to make tempdir"
 
-vmlinux="./boot/vmlinux-${kernversion}-${flavor}${vmlinux_compression_suffix}"
-image=""
-have_image && image="./boot/${image_name}-${kernversion}-${flavor}"
-rpm2cpio ${krpm} | (cd ${_tmpdir} ; cpio ${cpioflags} ${vmlinux} ${image})
+oldpath=./boot/
+newpath=./usr/lib/modules/${kernversion}-${flavor}/
+rpm2cpio ${krpm} | (cd ${_tmpdir} ; cpio ${cpioflags} ${oldpath}vmlinux* ${newpath}${image_name}*)
+
+oldvmlinux=${oldpath}vmlinux-${kernversion}-${flavor}
+newvmlinux=${newpath}vmlinux
+
+for vmlinux_cand in ${oldvmlinux} ${newvmlinux} ; do
+	for compext in zst xz gz ; do
+		test -f ${_tmpdir}/${vmlinux_cand}.${compext} && vmlinux=${vmlinux_cand}.${compext}
+	done
+done
+
+if have_image ;then
+	oldimage=${oldpath}${image_name}-${kernversion}-${flavor}
+	newimage=${newpath}${image_name}
+	image=""
+	for image_cand in ${newimage} ${oldimage} ; do
+		test -f ${_tmpdir}/${image_cand} && image=${image_cand}
+	done
+fi
 
 [ ! -f ${_tmpdir}/${vmlinux} ] && err "Unable to extract ${vmlinux} from ${krpm}"
 vmlinux_id=`buildid ${_tmpdir}/${vmlinux}`
