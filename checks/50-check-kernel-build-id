@@ -123,11 +123,11 @@ for vmlinux_cand in ${oldvmlinux} ${newvmlinux} ; do
 	done
 done
 
-if have_image ;then
+if have_image ; then
 	oldimage=${oldpath}${image_name}-${kernversion}-${flavor}
 	newimage=${newpath}${image_name}
 	image=""
-	for image_cand in ${newimage} ${oldimage} ; do
+	for image_cand in ${oldimage} ${newimage} ; do
 		test -f ${_tmpdir}/${image_cand} && image=${image_cand}
 	done
 fi
@@ -136,7 +136,7 @@ fi
 vmlinux_id=`buildid ${_tmpdir}/${vmlinux}`
 
 mismatch=0
-if have_image ;then
+if have_image ; then
 	[ ! -f ${_tmpdir}/${image} ] && err "Unable to extract ${image} from ${krpm}"
 	image_id=`buildid ${_tmpdir}/${image}`
 
