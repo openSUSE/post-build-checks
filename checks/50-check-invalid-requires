@@ -9,7 +9,7 @@ RPM="chroot $BUILD_ROOT rpm --nodigest --nosignature"
 
 FORBIDDEN_REQ=`find $BUILD_ROOT$TOPDIR/RPMS -name "*.rpm" | \
     xargs --no-run-if-empty rpm -qp --requires| \
-    egrep "/usr/local/|/usr/share/bin"`
+    grep -E "/usr/local/|/usr/share/bin"`
 
 for LINE in $FORBIDDEN_REQ; do
         case "$LINE" in
