@@ -53,7 +53,7 @@ RPM_ERASE_LIST=
 RPM_FILE_LIST=(`find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm"`)
 
 # essential deps that are needed by the build script to finish
-ESSENTIAL_PKG_TO_KEEP=" $(chroot $BUILD_ROOT rpm --qf '%{NAME}\n' -qf /usr/bin/{date,cat,rm,chown,find,su,gzip,cpio,sh} $(readlink -f /usr/bin/sh)|sort -u|xargs) "
+ESSENTIAL_PKG_TO_KEEP=" $(chroot $BUILD_ROOT rpm --qf '%{NAME}\n' -qf /usr/bin/{date,cat,rm,chown,find,su,gzip,cpio,sh} $(readlink -f /usr/bin/{date,cat,rm,chown,find,su,gzip,cpio,sh})|sort -u|xargs) "
 
 for RPM in `reorder "${RPM_FILE_LIST[@]}"`; do
     PKG=${RPM##*/}
