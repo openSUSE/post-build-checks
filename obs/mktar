@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 NAME=post-build-checks
-VERSION=13.2
+VERSION=84.87
 scmver=`git log -n1 --date=short --pretty=format:"$VERSION+git%cd.%h"|sed 's@-@@g'`
 fullver="$scmver"
 pfx="$NAME${fullver:+-$fullver}"
