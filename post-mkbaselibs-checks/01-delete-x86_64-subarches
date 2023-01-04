@@ -1,0 +1,13 @@
+#!/bin/bash
+
+TOPDIR=/usr/src/packages
+test -d $BUILD_ROOT/.build.packages && TOPDIR=/.build.packages
+
+test -e $BUILD_ROOT/skipped-install-cross && {
+    echo 'skipping removal of rpms, install was skipped'
+    rm -f $BUILD_ROOT/skipped-install-cross
+    exit 0
+}
+
+find $BUILD_ROOT$TOPDIR/RPMS -regex '.*/x86_64_v[234]/.*' -type f -name '*.rpm' -printf "Removing %p\n" -delete
+find $BUILD_ROOT$TOPDIR/RPMS -regex '.*/x86_64_v[234].*' -type d -printf "Cleaning directory %p\n" -delete
