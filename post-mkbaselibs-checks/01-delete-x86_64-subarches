@@ -9,6 +9,9 @@ test -e $BUILD_ROOT/skipped-install-cross && {
     exit 0
 }
 
+# flatpak builds don't produce a RPMS directory => subsequent find would fail
+test -d $BUILD_ROOT$TOPDIR/RPMS || exit 0
+
 find $BUILD_ROOT$TOPDIR/RPMS -regex '.*/x86_64_v[234]/.*' -type f -name '*.rpm' -print | while read rpm; do
    basearchrpm="${rpm//x86_64_v?/x86_64}"
    [ -f "$basearchrpm" ] && rm -vf "$rpm"
