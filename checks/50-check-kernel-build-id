@@ -1,37 +1,38 @@
 #!/bin/bash
 #set -x
 
-# Verify consistency of BuildID between vmlinux, image (vmlinuz etc - if 
-# supported) and vmlinux.debug (debuginfo). 
+# Verify consistency of BuildID between vmlinux, image (vmlinuz etc - if
+# supported) and vmlinux.debug (debuginfo).
 # Tony Jones <tonyj@suse.de>, May 2018
+# SUSE LLC, 2023
 
 # This script uses following build environment vars:
 # -PNAME (package name)
 # -BUILD_DEBUG (are debuginfo's being built? aka osc build -d?)
 
 trap '[ -d "${_tmpdir}" ] && rm -rf ${_tmpdir}' EXIT
-function warn() { echo "... $*" >&2; }
-function err() { warn $*; echo "Giving up" >&2 ; exit 0; }
-function buildid() { eu-readelf --notes $1 | awk '/Build ID:/ {print $3}'; }
-function have_image { [ -n "${image_name}" ]; }
-function have_debuginfo { [ ${have_debugi} -eq 1 ]; }
+warn() { echo "... $*" >&2; }
+err() { warn $*; echo "Giving up" >&2 ; exit 0; }
+buildid() { eu-readelf --notes $1 | awk '/Build ID:/ {print $3}'; }
+have_image() { [ -n "${image_name}" ]; }
+have_debuginfo() { [ ${have_debugi} -eq 1 ]; }
 
 # Find the version#s for kernel and kernel rpm
 # This should be consistent across branches
-function findversion() {
-	local _rpm 
+findversion() {
+    local _rpm
 
-	[ -d ${rpms} ] || err "Unable to find rpmbuild dir ${rpms}"
+    [ -d ${rpms} ] || err "Unable to find rpmbuild dir ${rpms}"
 
-	# find the "main" kernel rpm for $PNAME
-	_rpm=`cd ${rpms}; compgen -G "${PNAME}-[0-9]*.${arch}.rpm"`
+    # find the "main" kernel rpm for $PNAME
+    _rpm=$(cd ${rpms}; compgen -G "${PNAME}-[0-9]*.${arch}.rpm")
 
-	[ -z "${_rpm}" -o ! -f "${rpms}/${_rpm}" ] && err "Unable to find base kernel rpm for ${PNAME}"
+    [ -z "${_rpm}" -o ! -f "${rpms}/${_rpm}" ] && err "Unable to find base kernel rpm for ${PNAME}"
 
-	kernversion=`rpm -qp --provides ${rpms}/${_rpm} | awk '/^kernel-base =/ {print $3}'`
-	rpmversion=`rpm -qp --provides ${rpms}/${_rpm} | awk "/^${PNAME}\\(${rpm_prov_arch}\\) =/ {print \\$3}"`
+    kernversion=`rpm -qp --provides ${rpms}/${_rpm} | awk '/^kernel-base =/ {print $3}'`
+    rpmversion=`rpm -qp --provides ${rpms}/${_rpm} | awk "/^${PNAME}\\(${rpm_prov_arch}\\) =/ {print \\$3}"`
 
-	[ -z "${kernversion}" -o -z "${rpmversion}" ] && err "Unable to validate kernel build versions from ${_rpm}"; 
+    [ -z "${kernversion}" -o -z "${rpmversion}" ] && err "Unable to validate kernel build versions from ${_rpm}";
 }
 
 TOPDIR=/usr/src/packages
@@ -42,8 +43,8 @@ warnonly=0
 
 # only check for these flavors
 case "${PNAME}" in
-       kernel-default|kernel-debug|kernel-vanilla) 
-		flavor=${PNAME#kernel-};;
+       kernel-default|kernel-debug|kernel-vanilla)
+        flavor=${PNAME#kernel-};;
        *) exit 0;;
 esac
 
@@ -59,41 +60,44 @@ have_debugi=${BUILD_DEBUG}
 karchs="i586 i686 x86_64 ppc ppc64 ppc64le s390 s390x armv6l armv7l aarch64 riscv64"
 rpm_prov_arch=""
 for arch in ${karchs}; do
-	if [ -d ${TOPDIR}/RPMS/${arch} ] ;then
-		case ${arch} in
-			"i586"|"i686")    rpm_prov_arch="x86-32"
-				   image_name="vmlinuz";;
-			"x86_64")  rpm_prov_arch="x86-64";
-				   image_name="vmlinuz";;
-			"ppc")     rpm_prov_arch="ppc-32";;
-			"ppc64"|"ppc64le")   rpm_prov_arch="ppc-64";;
-			"s390")    rpm_prov_arch="s390-32"
-				   #has Image but not ELF
-				   ;;
-			"s390x")   rpm_prov_arch="s390-64"
-				   #has Image but not ELF
-				   ;;
-			"armv6l") rpm_prov_arch="armv6hl-32"
-				   #has Image but not ELF
-				   ;;
-			"armv7l") rpm_prov_arch="armv7hl-32"
-				   #has Image but not ELF
-				   ;;
-			"aarch64") rpm_prov_arch="aarch-64"
-				   #has Image but not ELF
-				   ;;
-			"riscv64") rpm_prov_arch="riscv-64"
-				   #has Image but not ELF
-				   ;;
-			*) err "karchs does not match case statement, please fixme!" ;;
-		esac
-		break
-	fi
+    if [ -d ${TOPDIR}/RPMS/${arch} ] ;then
+        case ${arch} in
+            "i586"|"i686")    rpm_prov_arch="x86-32"
+                   image_name="vmlinuz";;
+            "x86_64")  rpm_prov_arch="x86-64";
+                   image_name="vmlinuz";;
+            "ppc")     rpm_prov_arch="ppc-32";;
+            "ppc64"|"ppc64le")   rpm_prov_arch="ppc-64";;
+            "s390")    rpm_prov_arch="s390-32"
+                   #has Image but not ELF
+                   ;;
+            "s390x")   rpm_prov_arch="s390-64"
+                   #has Image but not ELF
+                   ;;
+            "armv6l") rpm_prov_arch="armv6hl-32"
+                   #has Image but not ELF
+                   ;;
+            "armv7l") rpm_prov_arch="armv7hl-32"
+                   #has Image but not ELF
+                   ;;
+            "aarch64") rpm_prov_arch="aarch-64"
+                   #has Image but not ELF
+                   ;;
+            "riscv64") rpm_prov_arch="riscv-64"
+                   #has Image but not ELF
+                   ;;
+            *) err "karchs does not match case statement, please fixme!" ;;
+        esac
+        break
+    fi
 done
 
 [ -n "${rpm_prov_arch}" ] || { warn "No valid build arch in ${TOPDIR}/RPMS"; exit 0; }
 
-! have_image && ! have_debuginfo  && { warn "No BuildID consistency to verify (debuginfo disabled and arch has no kernel image fmt)"; exit 0; }
+if ! have_image && ! have_debuginfo; then
+    warn "No BuildID consistency to verify (debuginfo disabled and arch has no kernel image fmt)"
+    exit 0
+fi
 
 rpm -q --quiet elfutils || { warn "Unable to verify BuildID (no elfutils). Add 'BuildRequires: elfutils' to package"; exit 0; }
 
@@ -107,7 +111,7 @@ echo "... Processing kernel rpms in '${rpms}'"
 krpm=${rpms}/${PNAME}-${rpmversion}.${arch}.rpm
 [ -f ${krpm} ] || err "Unable to find kernel rpm '${krpm}'"
 
-_tmpdir=`mktemp -d`
+_tmpdir=$(mktemp -d)
 [ -d "${_tmpdir}" ] || err "Unable to make tempdir"
 
 oldpath=./boot/
@@ -118,18 +122,18 @@ oldvmlinux=${oldpath}vmlinux-${kernversion}-${flavor}
 newvmlinux=${newpath}vmlinux
 
 for vmlinux_cand in ${oldvmlinux} ${newvmlinux} ; do
-	for compext in zst xz gz ; do
-		test -f ${_tmpdir}/${vmlinux_cand}.${compext} && vmlinux=${vmlinux_cand}.${compext}
-	done
+    for compext in zst xz gz ; do
+    test -f ${_tmpdir}/${vmlinux_cand}.${compext} && vmlinux=${vmlinux_cand}.${compext}
+    done
 done
 
 if have_image ; then
-	oldimage=${oldpath}${image_name}-${kernversion}-${flavor}
-	newimage=${newpath}${image_name}
-	image=""
-	for image_cand in ${oldimage} ${newimage} ; do
-		test -f ${_tmpdir}/${image_cand} && image=${image_cand}
-	done
+    oldimage=${oldpath}${image_name}-${kernversion}-${flavor}
+    newimage=${newpath}${image_name}
+    image=""
+    for image_cand in ${oldimage} ${newimage} ; do
+    test -f ${_tmpdir}/${image_cand} && image=${image_cand}
+    done
 fi
 
 [ ! -f ${_tmpdir}/${vmlinux} ] && err "Unable to extract ${vmlinux} from ${krpm}"
@@ -137,32 +141,36 @@ vmlinux_id=`buildid ${_tmpdir}/${vmlinux}`
 
 mismatch=0
 if have_image ; then
-	[ ! -f ${_tmpdir}/${image} ] && err "Unable to extract ${image} from ${krpm}"
-	image_id=`buildid ${_tmpdir}/${image}`
+    [ ! -f ${_tmpdir}/${image} ] && err "Unable to extract ${image} from ${krpm}"
+    image_id=`buildid ${_tmpdir}/${image}`
 
-	if [ ${vmlinux_id} == "${image_id}" ] ;then
-		echo "... BuildID vmlinux/${image_name} OK - ${vmlinux_id}"
-	else
-		warn "BuildID Mismatch vmlinux=${vmlinux_id} ${image_name}=${image_id}" ; mismatch=1
-	fi
+    if [ "${vmlinux_id}" = "${image_id}" ] ;then
+        echo "... BuildID vmlinux/${image_name} OK - ${vmlinux_id}"
+    else
+        warn "BuildID Mismatch vmlinux=${vmlinux_id} ${image_name}=${image_id}" ; mismatch=1
+    fi
 fi
 
 if have_debuginfo ;then
-	kdbgi_rpm=${rpms}/${PNAME}-debuginfo-${rpmversion}.${arch}.rpm
-	[ ! -f ${kdbgi_rpm} ] && err "Unable to find kernel debuginfo rpm '${kdbgi_rpm}'"
+    kdbgi_rpm=${rpms}/${PNAME}-debuginfo-${rpmversion}.${arch}.rpm
+    [ ! -f ${kdbgi_rpm} ] && err "Unable to find kernel debuginfo rpm '${kdbgi_rpm}'"
 
-	vmlinux_dbgi="./usr/lib/debug/boot/vmlinux-${kernversion}-${flavor}.debug"
-	rpm2cpio ${kdbgi_rpm} | (cd ${_tmpdir} ; cpio ${cpioflags} ${vmlinux_dbgi})
+    vmlinux_dbgi="./usr/lib/debug/boot/vmlinux-${kernversion}-${flavor}.debug"
+    rpm2cpio ${kdbgi_rpm} | (cd ${_tmpdir} ; cpio ${cpioflags} ${vmlinux_dbgi})
 
-	[ ! -f ${_tmpdir}/${vmlinux_dbgi} ] && err "Unable to extract ${vmlinux} from ${kdbgi_rpm}"
-	vmlinux_dbgi_id=`buildid ${_tmpdir}/${vmlinux_dbgi}`
+    [ ! -f ${_tmpdir}/${vmlinux_dbgi} ] && err "Unable to extract ${vmlinux} from ${kdbgi_rpm}"
+    vmlinux_dbgi_id=`buildid ${_tmpdir}/${vmlinux_dbgi}`
 
-	if [ ${vmlinux_id} == "${vmlinux_dbgi_id}" ] ;then
-		echo "... BuildID vmlinux/vmlinux_debuginfo OK - ${vmlinux_id}"
-	else
-		warn "BuildID Mismatch vmlinux=${vmlinux_id} vmlinux_debuginfo=${vmlinux_dbgi_id}" ; mismatch=1
-	fi
+    if [ "${vmlinux_id}" = "${vmlinux_dbgi_id}" ] ;then
+        echo "... BuildID vmlinux/vmlinux_debuginfo OK - ${vmlinux_id}"
+    else
+        warn "BuildID Mismatch vmlinux=${vmlinux_id} vmlinux_debuginfo=${vmlinux_dbgi_id}" ; mismatch=1
+    fi
 fi
 
-[ ${warnonly} -eq 1 -a ${mismatch} -eq 1 ] && { mismatch=0; warn "Ignoring BuildID mismatch (IGNORE_BUILDID_MISMATCH exists in kernel source dir)"; }
+if [ ${warnonly} -eq 1 -a ${mismatch} -eq 1 ]; then
+    mismatch=0
+    warn "Ignoring BuildID mismatch (IGNORE_BUILDID_MISMATCH exists in kernel source dir)"
+fi
+
 exit ${mismatch}
