@@ -49,9 +49,9 @@ if test ! -v SOURCE_DATE_EPOCH && test -f /.buildenv && test "Y" != "$(rpm --eva
         unset SOURCE_DATE_EPOCH
     else
         export SOURCE_DATE_EPOCH
-    fi
-    if test "$SOURCE_DATE_EPOCH" -ge "$(date '+%s')" ; then
-        echo "ERROR SOURCE_DATE_EPOCH is in the future, clamping mtime if used might fail in hard to notice way, returning error" >&2
-        exit 1
+        if test "$SOURCE_DATE_EPOCH" -ge "$(date '+%s')" ; then
+            echo "ERROR SOURCE_DATE_EPOCH is in the future, clamping mtime if used might fail in hard to notice way, returning error" >&2
+            exit 1
+        fi
     fi
 fi
