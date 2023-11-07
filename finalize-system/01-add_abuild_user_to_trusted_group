@@ -15,4 +15,9 @@ grep -q "^abuild:" /etc/passwd || {
 
 }
 
-id abuild >/dev/null 2>/dev/null && usermod -G trusted -a abuild || true
+if id abuild >/dev/null 2>/dev/null; then
+    # add abuild to trusted auxiliary group
+    if ! id -nG abuild 2> /dev/null | grep -q trusted; then
+        sed -i -E -e 's|trusted:([^:]+):([^:]+):(.*)|trusted:\1:\2:abuild,\3|' /etc/group
+    fi
+fi
