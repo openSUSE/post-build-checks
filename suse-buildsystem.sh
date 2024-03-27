@@ -50,7 +50,8 @@ if test ! -v SOURCE_DATE_EPOCH && test -f /.buildenv && test "Y" != "$(rpm --eva
         export SOURCE_DATE_EPOCH_MTIME
         export SOURCE_DATE_EPOCH
     fi
-    if test "$SOURCE_DATE_EPOCH_MTIME" -ge "$(date '+%s')" ; then
+    if [ -n "$SOURCE_DATE_EPOCH_MTIME" ] &&
+       [ "$SOURCE_DATE_EPOCH_MTIME" -ge "$(date '+%s')" ]; then
         echo "WARNING SOURCE_DATE_EPOCH_MTIME is in the future, we assume you do not use clamping of mtime, it would fail in hard to notice ways, continuing" >&2
     fi
 fi
