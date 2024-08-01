@@ -7,6 +7,7 @@ export QT_HASH_SEED=0
 export PERL_HASH_SEED=42
 export PYTHONHASHSEED=0
 export FORCE_SOURCE_DATE=1 # for texlive to use SOURCE_DATE_EPOCH
+export RUSTFLAGS="-C codegen-units=1"
 
 if test ! -v SOURCE_DATE_EPOCH && test -f /.buildenv && test "Y" != "$(rpm --eval '%disable_obs_set_source_date_epoch')"; then
     SOURCE_DATE_EPOCH="$(
