@@ -50,7 +50,7 @@ test -e $BUILD_ROOT/skipped-install-cross && {
 echo "... removing all built rpms"
 export YAST_IS_RUNNING="instsys"
 RPM_ERASE_LIST=
-RPM_FILE_LIST=(`find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm"`)
+RPM_FILE_LIST=(`find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm" | LC_ALL=C sort`)
 
 # essential deps that are needed by the build script to finish
 ESSENTIAL_PKG_TO_KEEP=" $(chroot $BUILD_ROOT rpm --qf '%{NAME}\n' -qf /usr/bin/{date,cat,rm,chown,find,su,gzip,cpio,sh,mount,umount} /sbin/{swapon,swapoff} $(readlink -f /usr/bin/{date,cat,rm,chown,find,su,gzip,cpio,sh})|sort -u|xargs) "

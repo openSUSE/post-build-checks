@@ -6,7 +6,7 @@ TOPDIR=/usr/src/packages
 test -d $BUILD_ROOT/.build.packages && TOPDIR=/.build.packages
 ret=0
 
-for pkg in `find $BUILD_ROOT$TOPDIR/RPMS -name "*.rpm"`; do
+for pkg in `find $BUILD_ROOT$TOPDIR/RPMS -name "*.rpm" | LC_ALL=C sort`; do
 	case "$pkg" in
 		*-debuginfo-*|*-debugsource-*) continue ;;
 	esac

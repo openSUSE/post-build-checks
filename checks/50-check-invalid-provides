@@ -8,7 +8,7 @@ export INVALID_FILE_FOUND=false
 
 RPM="env LC_ALL=C rpm --macros=/dev/null --nodigest --nosignature"
 
-for package in `find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm"` ; do
+for package in `find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm" | LC_ALL=C sort` ; do
   if $RPM -qp --provides $package | grep -q -E "^$($RPM -qp --qf='%{NAME}' $package)[[:space:]]*$"; then
     echo ""
     echo "ERROR: ${package##$BUILD_ROOT}"
