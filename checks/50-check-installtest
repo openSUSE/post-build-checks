@@ -17,7 +17,7 @@ RPM="chroot $BUILD_ROOT rpm --nodigest --nosignature"
 test -d $BUILD_ROOT/proc/sys || { echo "proc is not mounted"; exit 1; }
 
 export YAST_IS_RUNNING="instsys"
-for i in $(find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm" | sort) ; do
+for i in $(find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm" | LC_ALL=C sort) ; do
     set -- $($RPM --macros=/dev/null -qp --qf '%{PREINPROG} %{POSTINPROG} %{PREUNPROG} %{POSTUNPROG}' ${i#$BUILD_ROOT})
     pre_p="$1"
     post_p="$2"

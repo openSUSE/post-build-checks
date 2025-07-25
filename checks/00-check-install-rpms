@@ -4,7 +4,7 @@ echo "... installing all built rpms"
 TOPDIR=/usr/src/packages
 test -d $BUILD_ROOT/.build.packages && TOPDIR=/.build.packages
 export YAST_IS_RUNNING="instsys"
-for rpm in `find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm"`; do
+for rpm in `find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm" | LC_ALL=C sort`; do
   case ${rpm##*/} in
     rpm-ndb-*) 
       echo "converting rpm database to ndb"
