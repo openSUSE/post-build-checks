@@ -14,7 +14,7 @@ grep -q "secure local" $BUILD_ROOT/etc/sysconfig/security || {
 
 RPM="chroot $BUILD_ROOT env LC_ALL=C rpm --nodigest --nosignature -Vp --nofiledigest --nodeps"
 
-for i in $(find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm" | sort) ; do
+for i in $(find $BUILD_ROOT$TOPDIR/RPMS -type f -name "*.rpm" | LC_ALL=C sort) ; do
     case "$pkg" in
         *-debuginfo-*|*-debugsource-*) continue ;;
     esac
